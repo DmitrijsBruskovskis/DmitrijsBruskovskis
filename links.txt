@@ -7,4 +7,6 @@ https://qastack.ru/ubuntu/16386/is-there-any-software-that-will-do-face-recognit
 
 https://www.nexmo.com/blog/2020/03/18/real-time-face-detection-in-net-with-opentok-and-opencv-dr
 
+https://docs.google.com/document/d/122wd-Oq84jpHMZyBiwo6daCethND0GA_wOHsoFLbOfs/edit - google dokumentacija
+
 
