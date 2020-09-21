@@ -27,11 +27,12 @@ namespace FaceDetector
 
                 // find all faces in the image
                 var faces = fd.Operator(img);
-                if(faces != null)
+                if(faces.Length != 0)
                 {
                     Console.WriteLine("Picture have faces");
                     bool pictureHaveFaces = true;
                 }
+
                 foreach (var face in faces)
                 {
                     // draw a rectangle for each face
