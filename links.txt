@@ -10,3 +10,4 @@ https://www.nexmo.com/blog/2020/03/18/real-time-face-detection-in-net-with-opent
 https://docs.google.com/document/d/122wd-Oq84jpHMZyBiwo6daCethND0GA_wOHsoFLbOfs/edit - google dokumentacija
 
 
+
