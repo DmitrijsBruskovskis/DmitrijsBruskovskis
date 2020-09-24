@@ -28,5 +28,10 @@ namespace Face_recognition
                 fm.Show();
             }
         }
+
+        private void FrmLogin_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

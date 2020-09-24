@@ -16,33 +16,60 @@ namespace Face_recognition
         public frmMain()
         {
             InitializeComponent();
+            int AttSkaits;
+            string Atslega;
+        }
+
+        public void ChooseFolder()
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                txtMape.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        public class XMLWrite
+        {
+
+            public class Book
+            {
+                public String title;
+            }
+
+            public static void WriteXML()
+            {
+                Book overview = new Book();
+                overview.title = "Serialization Overview";
+                System.Xml.Serialization.XmlSerializer writer =
+                    new System.Xml.Serialization.XmlSerializer(typeof(Book));
+
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
+                System.IO.FileStream file = System.IO.File.Create(path);
+
+                writer.Serialize(file, overview);
+                file.Close();
+            }
+        }
+
+        public class DataClass
+        {
+            public DataClass()
+            {
+                //AttSkaits no xml
+                //Atslega no xml/db
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            //int size = -1;
-            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
-            if (result == DialogResult.OK) // Test result.
-            {
-                string file = openFileDialog1.FileName;
-                labelFileName.Text = file;
-                //try
-                //{
-                //    string text = File.ReadAllText(file);
-                //    size = text.Length;
-                //}
-                //catch (IOException)
-                //{
-                //}
-            }
-            //Console.WriteLine(size); // <-- Shows file size in debugging mode.
-            //Console.WriteLine(result); // <-- For debugging use.
+            ChooseFolder();
         }
 
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
-            int AttSkaits = Convert.ToInt32(txtSkaits.Value);
-            label3.Text = Convert.ToString(AttSkaits);
+            //int AttSkaits = Convert.ToInt32(txtSkaits.Value);
+            //label3.Text = Convert.ToString(AttSkaits);
+            
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
@@ -52,5 +79,10 @@ namespace Face_recognition
             fl.Show();
             //frmLogin login = false;
         }
+
+        //private void FrmMain_Load(object sender, EventArgs e)
+        //{
+
+        //}
     }
 }

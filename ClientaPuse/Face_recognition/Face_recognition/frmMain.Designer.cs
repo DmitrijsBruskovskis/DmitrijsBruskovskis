@@ -33,11 +33,13 @@
             this.button1 = new System.Windows.Forms.Button();
             this.txtSkaits = new System.Windows.Forms.NumericUpDown();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.labelFileName = new System.Windows.Forms.Label();
             this.btnConfirm = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.btnLogout = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtMape = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.txtSkaits)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +55,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 223);
+            this.label2.Location = new System.Drawing.Point(41, 105);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 13);
             this.label2.TabIndex = 1;
@@ -71,19 +73,10 @@
             // 
             // txtSkaits
             // 
-            this.txtSkaits.Location = new System.Drawing.Point(154, 221);
+            this.txtSkaits.Location = new System.Drawing.Point(154, 103);
             this.txtSkaits.Name = "txtSkaits";
             this.txtSkaits.Size = new System.Drawing.Size(101, 20);
             this.txtSkaits.TabIndex = 3;
-            // 
-            // labelFileName
-            // 
-            this.labelFileName.AutoSize = true;
-            this.labelFileName.Location = new System.Drawing.Point(261, 70);
-            this.labelFileName.Name = "labelFileName";
-            this.labelFileName.Size = new System.Drawing.Size(86, 13);
-            this.labelFileName.TabIndex = 4;
-            this.labelFileName.Text = "Nav izvēlēts fails";
             // 
             // btnConfirm
             // 
@@ -98,7 +91,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(154, 248);
+            this.label3.Location = new System.Drawing.Point(261, 110);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 6;
@@ -114,21 +107,47 @@
             this.btnLogout.UseVisualStyleBackColor = true;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(41, 142);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(79, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Klienta atslēga:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(154, 139);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(142, 20);
+            this.textBox1.TabIndex = 9;
+            // 
+            // txtMape
+            // 
+            this.txtMape.Location = new System.Drawing.Point(264, 67);
+            this.txtMape.Name = "txtMape";
+            this.txtMape.Size = new System.Drawing.Size(311, 20);
+            this.txtMape.TabIndex = 10;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(665, 352);
+            this.ClientSize = new System.Drawing.Size(663, 352);
+            this.Controls.Add(this.txtMape);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnConfirm);
-            this.Controls.Add(this.labelFileName);
             this.Controls.Add(this.txtSkaits);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "frmMain";
             this.Text = "Parametru ievade";
+            this.Load += new System.EventHandler(this.FrmMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.txtSkaits)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -142,11 +161,13 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.NumericUpDown txtSkaits;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.Label labelFileName;
         private System.Windows.Forms.Button btnConfirm;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtMape;
     }
 }
 
