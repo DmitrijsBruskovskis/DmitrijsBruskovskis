@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Face_recognition
 {
@@ -16,8 +18,8 @@ namespace Face_recognition
         public frmMain()
         {
             InitializeComponent();
-            int AttSkaits;
-            string Atslega;
+            //int AttSkaits;
+            //string Atslega;
         }
 
         public void ChooseFolder()
@@ -28,39 +30,57 @@ namespace Face_recognition
             }
         }
 
-        public class XMLWrite
+        public class Data
         {
-
-            public class Book
-            {
-                public String title;
-            }
-
-            public static void WriteXML()
-            {
-                Book overview = new Book();
-                overview.title = "Serialization Overview";
-                System.Xml.Serialization.XmlSerializer writer =
-                    new System.Xml.Serialization.XmlSerializer(typeof(Book));
-
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
-                System.IO.FileStream file = System.IO.File.Create(path);
-
-                writer.Serialize(file, overview);
-                file.Close();
-            }
+            [XmlAttribute]
+            public int AttSkaits;
         }
 
-        public class DataClass
+        private void CreatePO(string filename)
         {
-            public DataClass()
-            {
-                //AttSkaits no xml
-                //Atslega no xml/db
-            }
-        }
+            // Create an instance of the XmlSerializer class;
+            // specify the type of object to serialize.
+            XmlSerializer serializer =
+            //new XmlSerializer(typeof(PurchaseOrder));
+            TextWriter writer = new StreamWriter(filename);
+            //PurchaseOrder po = new PurchaseOrder();
 
-        private void Button1_Click(object sender, EventArgs e)
+            // Create an address to ship and bill to.
+            Data billAddress = new Data();
+            billAddress.AttSkaits = Convert.ToInt32(txtSkaits.Value);
+           
+
+
+            //public class XMLWrite
+            //{
+
+
+
+            //    public static void WriteXML()
+            //    {
+            //        Book overview = new Book();
+            //        overview.title = "Serialization Overview";
+            //        System.Xml.Serialization.XmlSerializer writer =
+            //            new System.Xml.Serialization.XmlSerializer(typeof(Book));
+
+            //        var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
+            //        System.IO.FileStream file = System.IO.File.Create(path);
+
+            //        writer.Serialize(file, overview);
+            //        file.Close();
+            //    }
+            //}
+
+            //public class DataClass
+            //{
+            //    public DataClass()
+            //    {
+            //        //AttSkaits no xml
+            //        //Atslega no xml/db
+            //    }
+            //}
+
+            private void Button1_Click(object sender, EventArgs e)
         {
             ChooseFolder();
         }
@@ -80,9 +100,9 @@ namespace Face_recognition
             //frmLogin login = false;
         }
 
-        //private void FrmMain_Load(object sender, EventArgs e)
-        //{
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
 
-        //}
+        }
     }
 }
