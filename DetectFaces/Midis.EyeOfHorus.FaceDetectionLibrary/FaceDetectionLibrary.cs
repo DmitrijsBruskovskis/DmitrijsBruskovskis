@@ -5,20 +5,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using DlibDotNet;
 using Dlib = DlibDotNet.Dlib;
-using Midis.EyeOfHorus.FaceDetectionLibrary;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
-        //// file paths
-        //private const string inputFilePath = "./input.jpg";
-        //// Replace <Subscription Key> with your valid subscription key.
-        //const string subscriptionKey = "585d3cc48b4c4d449862067c6220e753";
-        //// replace <myresourcename> with the string found in your endpoint URL
-        //const string uriBase =
-        //    "https://midiseu.cognitiveservices.azure.com/face/v1.0/detect";
-
         public static void DetectFaces()
         {
             // set up Dlib facedetector
@@ -174,7 +165,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         }
                     }
                 }
-
                 return sb.ToString().Trim();
             }
         }
