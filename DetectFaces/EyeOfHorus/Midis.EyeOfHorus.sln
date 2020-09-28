@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.Server", "Midis.EyeOfHorus.Server.csproj", "{98A0C614-1252-4B41-84D9-1B036FA0C160}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.Server.Consol", "Midis.EyeOfHorus.Server.Consol.csproj", "{98A0C614-1252-4B41-84D9-1B036FA0C160}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midis.EyeOfHorus.Client", "..\Face_recognition\Face_recognition\Midis.EyeOfHorus.Client.csproj", "{2E52821F-3482-4FE8-8131-9F586F642979}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.FaceDetectionLibrary", "..\Midis.EyeOfHorus.FaceDetectionLibrary\Midis.EyeOfHorus.FaceDetectionLibrary.csproj", "{40F970CB-51B8-4C57-A34F-859AD84E3CCD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{2E52821F-3482-4FE8-8131-9F586F642979}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E52821F-3482-4FE8-8131-9F586F642979}.Release|x64.ActiveCfg = Release|Any CPU
 		{2E52821F-3482-4FE8-8131-9F586F642979}.Release|x64.Build.0 = Release|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Debug|x64.ActiveCfg = Debug|x64
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Debug|x64.Build.0 = Debug|x64
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Release|x64.ActiveCfg = Release|Any CPU
+		{40F970CB-51B8-4C57-A34F-859AD84E3CCD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
