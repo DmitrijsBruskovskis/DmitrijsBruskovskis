@@ -6,6 +6,9 @@ using System.Text;
 using DlibDotNet;
 using DlibDotNet.Extensions;
 using Dlib = DlibDotNet.Dlib;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace FaceDetector
 {
@@ -78,7 +81,7 @@ namespace FaceDetector
                     "Ocp-Apim-Subscription-Key", subscriptionKey);
 
                 // Request parameters. A third optional parameter is "details".
-                string requestParameters = "returnFaceId=true&returnFaceLandmarks=true";
+                string requestParameters = "returnFaceId=true&returnFaceLandmarks=false";
                     //"+ &returnFaceAttributes=age,gender,headPose,smile,facialHair,glasses," +
                     //"emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
