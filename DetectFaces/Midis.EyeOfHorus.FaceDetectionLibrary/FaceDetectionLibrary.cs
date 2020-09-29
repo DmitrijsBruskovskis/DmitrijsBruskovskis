@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Configuration;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,6 +13,10 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
     {
         public static void DetectFaces()
         {
+            var inputFilePath = ConfigurationManager.AppSettings["inputFilePath"];
+            var subscriptionKey = ConfigurationManager.AppSettings["subscriptionKey"];
+            var uriBase = ConfigurationManager.AppSettings["uriBase"];
+
             // set up Dlib facedetector
             using (var fd = Dlib.GetFrontalFaceDetector())
             {
@@ -89,6 +94,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     string contentString = await response.Content.ReadAsStringAsync();
 
                     // Display the JSON response.
+                    //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(response.Content);
                     Console.WriteLine("\nResponse:\n");
                     Console.WriteLine(JsonPrettyPrint(contentString));
                     Console.WriteLine("\nPress Enter to exit...");
