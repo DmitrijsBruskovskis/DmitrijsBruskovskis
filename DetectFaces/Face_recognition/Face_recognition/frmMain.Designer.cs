@@ -31,16 +31,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.txtSkaits = new System.Windows.Forms.NumericUpDown();
+            this.txtFrCount = new System.Windows.Forms.NumericUpDown();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
             this.btnLogout = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtKey = new System.Windows.Forms.TextBox();
             this.txtMape = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.txtSkaits)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFrCount)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -71,12 +70,12 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // txtSkaits
+            // txtFrCount
             // 
-            this.txtSkaits.Location = new System.Drawing.Point(154, 103);
-            this.txtSkaits.Name = "txtSkaits";
-            this.txtSkaits.Size = new System.Drawing.Size(101, 20);
-            this.txtSkaits.TabIndex = 3;
+            this.txtFrCount.Location = new System.Drawing.Point(154, 103);
+            this.txtFrCount.Name = "txtFrCount";
+            this.txtFrCount.Size = new System.Drawing.Size(101, 20);
+            this.txtFrCount.TabIndex = 3;
             // 
             // btnConfirm
             // 
@@ -87,15 +86,6 @@
             this.btnConfirm.Text = "OK";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.BtnConfirm_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(261, 110);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "label3";
             // 
             // btnLogout
             // 
@@ -116,12 +106,12 @@
             this.label4.TabIndex = 8;
             this.label4.Text = "Klienta atslēga:";
             // 
-            // textBox1
+            // txtKey
             // 
-            this.textBox1.Location = new System.Drawing.Point(154, 139);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(142, 20);
-            this.textBox1.TabIndex = 9;
+            this.txtKey.Location = new System.Drawing.Point(154, 139);
+            this.txtKey.Name = "txtKey";
+            this.txtKey.Size = new System.Drawing.Size(142, 20);
+            this.txtKey.TabIndex = 9;
             // 
             // txtMape
             // 
@@ -136,19 +126,18 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(663, 352);
             this.Controls.Add(this.txtMape);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtKey);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.btnLogout);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnConfirm);
-            this.Controls.Add(this.txtSkaits);
+            this.Controls.Add(this.txtFrCount);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "frmMain";
             this.Text = "Parametru ievade";
-            this.Load += new System.EventHandler(this.FrmMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.txtSkaits)).EndInit();
+            this.Load += new System.EventHandler(this.frmMain_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.txtFrCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,14 +148,13 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.NumericUpDown txtSkaits;
+        private System.Windows.Forms.NumericUpDown txtFrCount;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnConfirm;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtKey;
         private System.Windows.Forms.TextBox txtMape;
     }
 }
