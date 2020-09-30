@@ -1,10 +1,11 @@
-﻿using System.Configuration;
-using System;
+﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using DlibDotNet;
+using Newtonsoft.Json;
 using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
@@ -94,7 +95,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     string contentString = await response.Content.ReadAsStringAsync();
 
                     // Display the JSON response.
-                    //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(response.Content);
+                    //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(contentString);
                     Console.WriteLine("\nResponse:\n");
                     Console.WriteLine(JsonPrettyPrint(contentString));
                     Console.WriteLine("\nPress Enter to exit...");
