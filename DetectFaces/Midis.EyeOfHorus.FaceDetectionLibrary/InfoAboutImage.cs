@@ -6,7 +6,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class InfoAboutImage
     {
-        public string faceId { get; set; }
-        public string faceRectangle { get; set; }
+        public string FaceId { get; set; }
+        public string FaceRectangle { get; set; }
     }
 }

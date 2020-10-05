@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web.Helpers;
 using DlibDotNet;
 using Newtonsoft.Json;
 using Dlib = DlibDotNet.Dlib;
@@ -95,7 +96,14 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     string contentString = await response.Content.ReadAsStringAsync();
 
                     // Display the JSON response.
+                    //var test = Json.Encode(contentString);
+                    //Console.WriteLine(test);
+
+                    //Gson testGSON = new Gson();
+                    //InfoAboutImage infoAboutImage = testGSON.fromJson(contentString, Image.FaceId, Image.FaceRectangle);
+
                     //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(contentString);
+
                     Console.WriteLine("\nResponse:\n");
                     Console.WriteLine(JsonPrettyPrint(contentString));
                     Console.WriteLine("\nPress Enter to exit...");
