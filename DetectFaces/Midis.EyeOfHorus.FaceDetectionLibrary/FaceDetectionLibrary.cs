@@ -96,6 +96,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     string contentString = await response.Content.ReadAsStringAsync();
 
                     // Display the JSON response.
+
                     //var test = Json.Encode(contentString);
                     //Console.WriteLine(test);
 
