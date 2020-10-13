@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
+
 
 namespace Face_recognition
 {
@@ -17,6 +19,17 @@ namespace Face_recognition
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmLogin());
+
+            string cs = "Data Source=:memory:";
+            string stm = "SELECT SQLITE_VERSION()";
+
+            var con = new SQLiteConnection(cs);
+            con.Open();
+
+            using var cmd = new SQLiteCommand(stm, con);
+            string version = cmd.ExecuteScalar().ToString();
+
+            Console.WriteLine($"SQLite version: {version}");
         }
     }
 }

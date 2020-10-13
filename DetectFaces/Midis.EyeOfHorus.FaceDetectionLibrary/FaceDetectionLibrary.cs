@@ -13,6 +13,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
+<<<<<<< HEAD
         //[TypeConverter(typeof(FooConverter))]
         //[JsonConverter(typeof(NoTypeConverterJsonConverter<InfoAboutImage>))]
 
@@ -77,6 +78,23 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         //public class TestClass
         //{
         //    public InfoAboutImage InfoAboutImage { get; set; }
+=======
+        public static void DetectFaces()
+        {
+            /*
+             appsettings ielāde 
+            https://stackoverflow.com/questions/38398022/access-from-class-library-to-appsetting-json-in-asp-net-core
+            https://pradeeploganathan.com/dotnet/configuration-in-a-net-core-console-application/
+
+            kā piemēru var izmantot šo resursu
+            https://blog.bitscry.com/2017/05/30/appsettings-json-in-net-core-console-app/
+
+            app.config jāpārnes uz console programmu un jāpārsauc 
+             */
+            var inputFilePath = ConfigurationManager.AppSettings["inputFilePath"];
+            var subscriptionKey = ConfigurationManager.AppSettings["subscriptionKey"];
+            var uriBase = ConfigurationManager.AppSettings["uriBase"];
+>>>>>>> e6168777c874dfbfb02c5120bed75573eea85235
 
         //    public static void Test()
         //    {
