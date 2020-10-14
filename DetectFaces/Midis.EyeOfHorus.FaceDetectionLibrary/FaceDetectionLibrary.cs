@@ -93,6 +93,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
         }
 
+        /// ////////////////// ////////////////// ////////////////// ///////////////
+
         public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
             // set up Dlib facedetector
