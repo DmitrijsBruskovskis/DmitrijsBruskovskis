@@ -28,6 +28,7 @@ namespace Consol
             string uriBase = configuration.GetSection("UriBase").Get<string>();
 
             // Library using
+            FaceDetectionLibrary.TestClass.Test();
             FaceDetectionLibrary.DetectFaces(inputFilePath, subscriptionKey, uriBase);
         }
 

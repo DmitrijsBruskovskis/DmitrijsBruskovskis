@@ -13,85 +13,85 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
-        //[TypeConverter(typeof(FooConverter))]
-        //[JsonConverter(typeof(NoTypeConverterJsonConverter<InfoAboutImage>))]
+        [TypeConverter(typeof(JsonConverter))]
+        [JsonConverter(typeof(NoTypeConverterJsonConverter<InfoAboutImage>))]
 
-        //public class FooConverter : TypeConverter
-        //{
-        //    public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
-        //    {
-        //        if (sourceType == typeof(string))
-        //        {
-        //            return true;
-        //        }
-        //        return base.CanConvertFrom(context, sourceType);
-        //    }
-        //    public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-        //    {
-        //        if (value is string)
-        //        {
-        //            string s = value.ToString();
-        //            //s = s.Replace("\\", "");
-        //            InfoAboutImage f = JsonConvert.DeserializeObject<InfoAboutImage>(s);
-        //            return f;
-        //        }
-        //        return base.ConvertFrom(context, culture, value);
-        //    }
-        //}
+        public class JsonConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
+            {
+                if (sourceType == typeof(string))
+                {
+                    return true;
+                }
+                return base.CanConvertFrom(context, sourceType);
+            }
 
-        //public class NoTypeConverterJsonConverter<T> : JsonConverter
-        //{
-        //    static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
+            public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+            {
+                if (value is string)
+                {
+                    string s = value.ToString();
+                    //s = s.Replace("\\", "");
+                    InfoAboutImage f = JsonConvert.DeserializeObject<InfoAboutImage>(s);
+                    return f;
+                }
+                return base.ConvertFrom(context, culture, value);
+            }
+        }
 
+        public class NoTypeConverterJsonConverter<T> : JsonConverter
+        {
+            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
 
-        //    class NoTypeConverterContractResolver : DefaultContractResolver
-        //    {
-        //        protected override JsonContract CreateContract(Type objectType)
-        //        {
-        //            if (typeof(T).IsAssignableFrom(objectType))
-        //            {
-        //                var contract = this.CreateObjectContract(objectType);
-        //                contract.Converter = null; // Also null out the converter to prevent infinite recursion.
-        //                return contract;
-        //            }
-        //            return base.CreateContract(objectType);
-        //        }
-        //    }
+            class NoTypeConverterContractResolver : DefaultContractResolver
+            {
+                protected override JsonContract CreateContract(Type objectType)
+                {
+                    if (typeof(T).IsAssignableFrom(objectType))
+                    {
+                        var contract = this.CreateObjectContract(objectType);
+                        contract.Converter = null; // Also null out the converter to prevent infinite recursion.
+                        return contract;
+                    }
+                    return base.CreateContract(objectType);
+                }
+            }
 
-        //    public override bool CanConvert(Type objectType)
-        //    {
-        //        return typeof(T).IsAssignableFrom(objectType);
-        //    }
+            public bool CanConvert(Type objectType)
+            {
+                return typeof(T).IsAssignableFrom(objectType);
+            }
 
-        //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        //    {
-        //        return JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Deserialize(reader, objectType);
-        //    }
+            public object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Deserialize(reader, objectType);
+            }
 
-        //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        //    {
-        //        JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Serialize(writer, value);
-        //    }
-        //}
+            public void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Serialize(writer, value);
+            }
+        }
 
-        //public class TestClass
-        //{
-        //    public InfoAboutImage InfoAboutImage { get; set; }
-        //    public static void Test()
-        //    {
-        //        var json = "{\"Foo\":{\"a\":true,\"b\":false,\"c\":false}}"; // {"Foo":{"a":true,"b":false,"c":false}}
+        public class TestClass
+        {
+            public InfoAboutImage InfoAboutImage { get; set; }
+            public static void Test()
+            {
+                var json = "{\"Foo\":{\"faceId\":true,\"faceRectangle\":false,}}"; // {"Foo":{"a":true,"b":false,"c":false}}
 
-        //        var test = JsonConvert.DeserializeObject<TestClass>(json);
-        //        Console.WriteLine(JsonConvert.SerializeObject(test, Formatting.Indented));
+                var test = JsonConvert.DeserializeObject<TestClass>(json);
+                Console.WriteLine(JsonConvert.SerializeObject(test, Formatting.Indented));
 
-        //        var fooJson = JsonConvert.SerializeObject(test.InfoAboutImage);
-        //        var foo2 = (InfoAboutImage)TypeDescriptor.GetConverter(typeof(InfoAboutImage)).ConvertFromString(fooJson);
-        //        Console.WriteLine(JsonConvert.SerializeObject(foo2, Formatting.Indented));
+                var fooJson = JsonConvert.SerializeObject(test.InfoAboutImage);
+                var foo2 = (InfoAboutImage)TypeDescriptor.GetConverter(typeof(InfoAboutImage)).ConvertFromString(fooJson);
+                Console.WriteLine(JsonConvert.SerializeObject(foo2, Formatting.Indented));
 
-        //        // This is what the JSON for TestClass would look like if Foo were serialized as a string:
-        //        Console.WriteLine(JsonConvert.SerializeObject(new { Foo = JsonConvert.SerializeObject(foo2) }, Formatting.None)); // {"Foo":"{\"a\":true,\"b\":false,\"c\":false}"}
-        //    }
-        //}
+                // This is what the JSON for TestClass would look like if Foo were serialized as a string:
+                Console.WriteLine(JsonConvert.SerializeObject(new { Foo = JsonConvert.SerializeObject(foo2) }, Formatting.None)); // {"Foo":"{\"a\":true,\"b\":false,\"c\":false}"}
+            }
+        }
 
         public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
