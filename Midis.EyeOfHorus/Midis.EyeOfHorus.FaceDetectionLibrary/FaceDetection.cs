@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using DlibDotNet;
 using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
 using Newtonsoft.Json;
@@ -16,49 +15,36 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
             // set up Dlib facedetector
-
+            var fileCount = new DirectoryInfo(inputFilePath).GetFiles().Length;
             using (var fd = Dlib.GetFrontalFaceDetector())
             {
-                // load input image
-                Array2D<RgbPixel> img = Dlib.LoadImage<RgbPixel>(inputFilePath);
-
-                // find all faces in the image
-                Rectangle[] faces = fd.Operator(img);
-                if (faces.Length != 0)
+                for (int i = 1; i <= fileCount; i++)
                 {
-                    Console.WriteLine("Picture have faces, sending data to Azure");
+                    string _inputFilePath = inputFilePath + i + ".jpg";
 
-                    if (File.Exists(inputFilePath))
-                    {
-                        try
-                        {
-                            MakeAnalysisRequest(inputFilePath, subscriptionKey, uriBase);
-                            Console.WriteLine("\nWait a moment for the results to appear.\n");
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("\n" + e.Message + "\nPress Enter to exit...\n");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nInvalid file path.\nPress Enter to exit...\n");
-                    }
-                    Console.ReadLine();
-                }
+                    // load input image
+                    Array2D <RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
 
-                foreach (var face in faces)
-                {
-                    // draw a rectangle for each face
-                    Dlib.DrawRectangle(img, face, color: new RgbPixel(0, 255, 255), thickness: 4);
+                    // find all faces in the image
+                    Rectangle[] faces = fd.Operator(img);
+                    if (faces.Length != 0)
+                    {
+                        Console.WriteLine("Picture " + i + " have faces, sending data to Azure");
+                        MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
+                    }
+
+                    foreach (var face in faces)
+                    {
+                        // draw a rectangle for each face
+                        Dlib.DrawRectangle(img, face, color: new RgbPixel(0, 255, 255), thickness: 4);
+                    }
+                    // export the modified image
+                    Dlib.SaveJpeg(img, "./Results/" + i + ".jpg");
                 }
-                // export the modified image
-                Dlib.SaveJpeg(img, "./Results/Output.jpg");
             }
 
-
             // Gets the analysis of the specified image by using the Face REST API.
-            static async void MakeAnalysisRequest(string inputFilePath, string subscriptionKey, string uriBase)
+            static void MakeAnalysisRequest(string inputFilePath, string subscriptionKey, string uriBase)
             {
                 HttpClient client = new HttpClient();
 
@@ -88,18 +74,22 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         new MediaTypeHeaderValue("application/octet-stream");
 
                     // Execute the REST API call.
-                    response = await client.PostAsync(uri, content);
+                    response = client.PostAsync(uri, content).GetAwaiter().GetResult();
 
                     // Get the JSON response.
-                    string contentString = await response.Content.ReadAsStringAsync();
+                    string contentString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                    // Display the JSON response.
-
+                    // JSON response deserialization in list
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
+                    // Display the JSON response.
                     Console.WriteLine("\nResponse:\n");
-                    Console.WriteLine(JsonPrettyPrint(contentString));
-                    Console.WriteLine("\nPress Enter to exit...");
+                    for (int i = 0; i < infoAboutImage.Count; i++)
+                    {
+                        Console.WriteLine(infoAboutImage[i].FaceId);
+                        Console.WriteLine(infoAboutImage[i].FaceRectangle);
+                    }
+                    Console.WriteLine("\nPress Enter to continue...");
                 }
             }
 
@@ -112,69 +102,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     BinaryReader binaryReader = new BinaryReader(fileStream);
                     return binaryReader.ReadBytes((int)fileStream.Length);
                 }
-            }
-
-            // Formats the given JSON string by adding line breaks and indents.
-            static string JsonPrettyPrint(string json)
-            {
-                if (string.IsNullOrEmpty(json))
-                    return string.Empty;
-
-                json = json.Replace(Environment.NewLine, "").Replace("\t", "");
-
-                StringBuilder sb = new StringBuilder();
-                bool quote = false;
-                bool ignore = false;
-                int offset = 0;
-                int indentLength = 3;
-
-                foreach (char ch in json)
-                {
-                    switch (ch)
-                    {
-                        case '"':
-                            if (!ignore) quote = !quote;
-                            break;
-                        case '\'':
-                            if (quote) ignore = !ignore;
-                            break;
-                    }
-
-                    if (quote)
-                        sb.Append(ch);
-                    else
-                    {
-                        switch (ch)
-                        {
-                            case '{':
-                            case '[':
-                                sb.Append(ch);
-                                sb.Append(Environment.NewLine);
-                                sb.Append(new string(' ', ++offset * indentLength));
-                                break;
-                            case '}':
-                            case ']':
-                                sb.Append(Environment.NewLine);
-                                sb.Append(new string(' ', --offset * indentLength));
-                                sb.Append(ch);
-                                break;
-                            case ',':
-                                sb.Append(ch);
-                                sb.Append(Environment.NewLine);
-                                sb.Append(new string(' ', offset * indentLength));
-                                break;
-                            case ':':
-                                sb.Append(ch);
-                                sb.Append(' ');
-                                break;
-                            default:
-                                if (ch != ' ') sb.Append(ch);
-                                break;
-                        }
-                    }
-                }
-                return sb.ToString().Trim();
-            }
+            }            
         }
     }
 }

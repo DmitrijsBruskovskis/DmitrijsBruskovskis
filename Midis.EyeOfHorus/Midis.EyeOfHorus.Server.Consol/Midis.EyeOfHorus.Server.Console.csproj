@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Midis.EyeOfHorus.FaceDetectionLibrary\Midis.EyeOfHorus.FaceDetectionLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

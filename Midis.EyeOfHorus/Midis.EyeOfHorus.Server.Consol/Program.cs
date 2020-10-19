@@ -36,7 +36,7 @@ namespace Consol
             // Build configuration
             configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("./appsettings.json", false)
                 .Build();
 
             // Add access to generic IConfigurationRoot
