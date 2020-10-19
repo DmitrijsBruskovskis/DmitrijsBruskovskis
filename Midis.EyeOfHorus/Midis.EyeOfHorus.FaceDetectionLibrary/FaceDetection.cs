@@ -1,49 +1,38 @@
-﻿using DlibDotNet;
-using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
-using System;
-using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using DlibDotNet;
+using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
+using Newtonsoft.Json;
+using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
-    public class FaceDetection
+    public class FaceDetectionLibrary
     {
-        public static void DetectFaces()
+        public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
-            /*
-             appsettings ielāde 
-            https://stackoverflow.com/questions/38398022/access-from-class-library-to-appsetting-json-in-asp-net-core
-            https://pradeeploganathan.com/dotnet/configuration-in-a-net-core-console-application/
-
-            kā piemēru var izmantot šo resursu
-            https://blog.bitscry.com/2017/05/30/appsettings-json-in-net-core-console-app/
-
-            app.config jāpārnes uz console programmu un jāpārsauc 
-             */
-            var inputFilePath = ConfigurationManager.AppSettings["inputFilePath"];
-            var subscriptionKey = ConfigurationManager.AppSettings["subscriptionKey"];
-            var uriBase = ConfigurationManager.AppSettings["uriBase"];
-
             // set up Dlib facedetector
+
             using (var fd = Dlib.GetFrontalFaceDetector())
             {
                 // load input image
-                var img = Dlib.LoadImage<RgbPixel>(ProjectConstants.inputFilePath);
+                Array2D<RgbPixel> img = Dlib.LoadImage<RgbPixel>(inputFilePath);
 
                 // find all faces in the image
-                var faces = fd.Operator(img);
+                Rectangle[] faces = fd.Operator(img);
                 if (faces.Length != 0)
                 {
                     Console.WriteLine("Picture have faces, sending data to Azure");
 
-                    if (File.Exists(ProjectConstants.inputFilePath))
+                    if (File.Exists(inputFilePath))
                     {
                         try
                         {
-                            MakeAnalysisRequest(ProjectConstants.inputFilePath);
+                            MakeAnalysisRequest(inputFilePath, subscriptionKey, uriBase);
                             Console.WriteLine("\nWait a moment for the results to appear.\n");
                         }
                         catch (Exception e)
@@ -64,17 +53,18 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     Dlib.DrawRectangle(img, face, color: new RgbPixel(0, 255, 255), thickness: 4);
                 }
                 // export the modified image
-                Dlib.SaveJpeg(img, "./Tests/output.jpg");
+                Dlib.SaveJpeg(img, "./Results/Output.jpg");
             }
 
+
             // Gets the analysis of the specified image by using the Face REST API.
-            static async void MakeAnalysisRequest(string inputFilePath)
+            static async void MakeAnalysisRequest(string inputFilePath, string subscriptionKey, string uriBase)
             {
                 HttpClient client = new HttpClient();
 
                 // Request headers.
                 client.DefaultRequestHeaders.Add(
-                    "Ocp-Apim-Subscription-Key", ProjectConstants.subscriptionKey);
+                    "Ocp-Apim-Subscription-Key", subscriptionKey);
 
                 // Request parameters. A third optional parameter is "details".
                 string requestParameters = "returnFaceId=true&returnFaceLandmarks=false";
@@ -82,7 +72,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 //"emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
                 // Assemble the URI for the REST API Call.
-                string uri = ProjectConstants.uriBase + "?" + requestParameters;
+                string uri = uriBase + "?" + requestParameters;
 
                 HttpResponseMessage response;
 
@@ -105,13 +95,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                     // Display the JSON response.
 
-                    //var test = Json.Encode(contentString);
-                    //Console.WriteLine(test);
-
-                    //Gson testGSON = new Gson();
-                    //InfoAboutImage infoAboutImage = testGSON.fromJson(contentString, Image.FaceId, Image.FaceRectangle);
-
-                    //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(contentString);
+                    var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
                     Console.WriteLine("\nResponse:\n");
                     Console.WriteLine(JsonPrettyPrint(contentString));

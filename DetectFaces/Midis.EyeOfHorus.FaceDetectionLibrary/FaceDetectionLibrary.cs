@@ -1,100 +1,17 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using DlibDotNet;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
-        [TypeConverter(typeof(JsonConverter))]
-        [JsonConverter(typeof(NoTypeConverterJsonConverter<InfoAboutImage>))]
-
-        public class JsonConverter : TypeConverter
-        {
-            public override bool CanConvertFrom(ITypeDescriptorContext context, System.Type sourceType)
-            {
-                if (sourceType == typeof(string))
-                {
-                    return true;
-                }
-                return base.CanConvertFrom(context, sourceType);
-            }
-
-            public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-            {
-                if (value is string)
-                {
-                    string s = value.ToString();
-                    //s = s.Replace("\\", "");
-                    InfoAboutImage f = JsonConvert.DeserializeObject<InfoAboutImage>(s);
-                    return f;
-                }
-                return base.ConvertFrom(context, culture, value);
-            }
-        }
-
-        public class NoTypeConverterJsonConverter<T> : JsonConverter
-        {
-            static readonly IContractResolver resolver = new NoTypeConverterContractResolver();
-
-            class NoTypeConverterContractResolver : DefaultContractResolver
-            {
-                protected override JsonContract CreateContract(Type objectType)
-                {
-                    if (typeof(T).IsAssignableFrom(objectType))
-                    {
-                        var contract = this.CreateObjectContract(objectType);
-                        contract.Converter = null; // Also null out the converter to prevent infinite recursion.
-                        return contract;
-                    }
-                    return base.CreateContract(objectType);
-                }
-            }
-
-            public bool CanConvert(Type objectType)
-            {
-                return typeof(T).IsAssignableFrom(objectType);
-            }
-
-            public object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                return JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Deserialize(reader, objectType);
-            }
-
-            public void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = resolver }).Serialize(writer, value);
-            }
-        }
-
-        public class TestClass
-        {
-            public InfoAboutImage InfoAboutImage { get; set; }
-            public static void Test()
-            {
-                var json = "{\"Foo\":{\"faceId\":true,\"faceRectangle\":false,}}"; // {"Foo":{"a":true,"b":false,"c":false}}
-
-                var test = JsonConvert.DeserializeObject<TestClass>(json);
-                Console.WriteLine(JsonConvert.SerializeObject(test, Formatting.Indented));
-
-                var fooJson = JsonConvert.SerializeObject(test.InfoAboutImage);
-                var foo2 = (InfoAboutImage)TypeDescriptor.GetConverter(typeof(InfoAboutImage)).ConvertFromString(fooJson);
-                Console.WriteLine(JsonConvert.SerializeObject(foo2, Formatting.Indented));
-
-                // This is what the JSON for TestClass would look like if Foo were serialized as a string:
-                Console.WriteLine(JsonConvert.SerializeObject(new { Foo = JsonConvert.SerializeObject(foo2) }, Formatting.None)); // {"Foo":"{\"a\":true,\"b\":false,\"c\":false}"}
-            }
-        }
-
-        /// ////////////////// ////////////////// ////////////////// ///////////////
-
         public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
             // set up Dlib facedetector
@@ -173,12 +90,11 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     response = await client.PostAsync(uri, content);
 
                     // Get the JSON response.
-                    string contentDeserializeVersion = response.Content.ToString();
                     string contentString = await response.Content.ReadAsStringAsync();
 
                     // Display the JSON response.
 
-                    //InfoAboutImage infoAboutImage = JsonSerializer.Deserialize<InfoAboutImage>(contentDeserializeVersion);
+                    var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
                     Console.WriteLine("\nResponse:\n");
                     Console.WriteLine(JsonPrettyPrint(contentString));
