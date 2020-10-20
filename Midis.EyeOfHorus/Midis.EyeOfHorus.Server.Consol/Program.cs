@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Midis.EyeOfHorus.FaceDetectionLibrary;
+using Npgsql;
 using System;
 using System.IO;
 

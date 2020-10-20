@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using DlibDotNet;
 using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
 using Newtonsoft.Json;
+using Npgsql;
 using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
@@ -31,7 +32,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     if (faces.Length != 0)
                     {
                         Console.WriteLine("Picture " + files.Name + " have faces, sending data to Azure");
-                        //MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
+                        MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
                     }
 
                     foreach (var face in faces)
