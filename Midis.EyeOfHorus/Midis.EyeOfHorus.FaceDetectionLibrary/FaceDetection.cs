@@ -15,12 +15,13 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         public static void DetectFaces(string inputFilePath, string subscriptionKey, string uriBase)
         {
             // set up Dlib facedetector
-            var fileCount = new DirectoryInfo(inputFilePath).GetFiles().Length;
+            DirectoryInfo dir = new DirectoryInfo(inputFilePath);
+
             using (var fd = Dlib.GetFrontalFaceDetector())
             {
-                for (int i = 1; i <= fileCount; i++)
+                foreach (FileInfo files in dir.GetFiles("*.jpg"))
                 {
-                    string _inputFilePath = inputFilePath + i + ".jpg";
+                    string _inputFilePath = inputFilePath + files.Name;
 
                     // load input image
                     Array2D <RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
@@ -29,8 +30,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     Rectangle[] faces = fd.Operator(img);
                     if (faces.Length != 0)
                     {
-                        Console.WriteLine("Picture " + i + " have faces, sending data to Azure");
-                        MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
+                        Console.WriteLine("Picture " + files.Name + " have faces, sending data to Azure");
+                        //MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
                     }
 
                     foreach (var face in faces)
@@ -39,7 +40,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         Dlib.DrawRectangle(img, face, color: new RgbPixel(0, 255, 255), thickness: 4);
                     }
                     // export the modified image
-                    Dlib.SaveJpeg(img, "./Results/" + i + ".jpg");
+                    Dlib.SaveJpeg(img, "./Results/" + files.Name);
                 }
             }
 
@@ -88,8 +89,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     {
                         Console.WriteLine(infoAboutImage[i].FaceId);
                         Console.WriteLine(infoAboutImage[i].FaceRectangle);
-                    }
-                    Console.WriteLine("\nPress Enter to continue...");
+                    }                  
                 }
             }
 
