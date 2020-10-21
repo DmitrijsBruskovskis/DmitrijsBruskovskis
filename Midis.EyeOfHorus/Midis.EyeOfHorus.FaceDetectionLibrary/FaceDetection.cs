@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using DlibDotNet;
 using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
 using Newtonsoft.Json;
-using Npgsql;
 using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
@@ -83,6 +82,14 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                     // JSON response deserialization in list
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
+
+                    // Data transfer to the database
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        DatabaseInfoAboutImage databaseInfoAboutImage = new DatabaseInfoAboutImage { Id = 1, FaceId = "12345-w", FaceRectangle = "Test2" };
+                        db.Add(databaseInfoAboutImage);
+                        db.SaveChanges();
+                    }
 
                     // Display the JSON response.
                     Console.WriteLine("\nResponse:\n");
