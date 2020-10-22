@@ -26,5 +26,10 @@ namespace Midis.EyeOfHorus.Client
                 new Settings().Show();
             }
         }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

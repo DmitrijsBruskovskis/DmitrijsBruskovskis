@@ -49,5 +49,12 @@ namespace Midis.EyeOfHorus.Client
                 ClientKey = txtKey.Text
             });
         }
+
+        private void logOut_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Login fl = new Login();
+            fl.Show();
+        }
     }
 }
