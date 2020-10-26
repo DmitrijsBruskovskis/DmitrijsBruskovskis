@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using DlibDotNet;
 using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     if (faces.Length != 0)
                     {
                         Console.WriteLine("Picture " + files.Name + " have faces, sending data to Azure");
-                        MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase);
+                        MakeAnalysisRequest(_inputFilePath, subscriptionKey, uriBase, files.Name);
                     }
 
                     foreach (var face in faces)
@@ -45,7 +46,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             // Gets the analysis of the specified image by using the Face REST API.
-            static void MakeAnalysisRequest(string inputFilePath, string subscriptionKey, string uriBase)
+            static void MakeAnalysisRequest(string inputFilePath, string subscriptionKey, string uriBase, string fileName)
             {
                 HttpClient client = new HttpClient();
 
@@ -84,17 +85,31 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
                     // Data transfer to the database
-                    using (ApplicationContext db = new ApplicationContext())
-                    {
-                        DatabaseInfoAboutImage databaseInfoAboutImage = new DatabaseInfoAboutImage { Id = 1, FaceId = "12345-w", FaceRectangle = "Test2" };
-                        db.Add(databaseInfoAboutImage);
-                        db.SaveChanges();
-                    }
+                    //using (ApplicationContext db = new ApplicationContext())
+                    //{
+                    //    DatabaseInfoAboutImage databaseInfoAboutImage = new DatabaseInfoAboutImage { Id = 1, FaceId = "12345-w", FaceRectangle = "Test2" };
+                    //    db.Add(databaseInfoAboutImage);
+                    //    db.SaveChanges();
+                    //}
 
                     // Display the JSON response.
                     Console.WriteLine("\nResponse:\n");
                     for (int i = 0; i < infoAboutImage.Count; i++)
                     {
+                        // Data transfer to the database
+                        using (ApplicationContext db = new ApplicationContext())
+                        {
+                            DatabaseInfoAboutImage databaseInfoAboutImage = new DatabaseInfoAboutImage
+                            {
+                                ClientId = 1,
+                                CameraId = 1,
+                                FileName = fileName,
+                                FaceId = infoAboutImage[i].FaceId,
+                                FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()         
+                            };
+                            db.Add(databaseInfoAboutImage);
+                            db.SaveChanges();
+                        }
                         Console.WriteLine(infoAboutImage[i].FaceId);
                         Console.WriteLine(infoAboutImage[i].FaceRectangle);
                     }                  
@@ -112,5 +127,75 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 }
             }            
         }
+
+        //public static async Task CreatePersonGroup(IFaceClient client, string url, string RECOGNITION_MODEL1)
+        //{
+        //    // Create a dictionary for all your images, grouping similar ones under the same key.
+        //    Dictionary<string, string[]> personDictionary =
+        //        new Dictionary<string, string[]>
+        //            { { "Family1-Dad", new[] { "Family1-Dad1.jpg", "Family1-Dad2.jpg" } },
+        //      { "Family1-Mom", new[] { "Family1-Mom1.jpg", "Family1-Mom2.jpg" } },
+        //      { "Family1-Son", new[] { "Family1-Son1.jpg", "Family1-Son2.jpg" } },
+        //      { "Family1-Daughter", new[] { "Family1-Daughter1.jpg", "Family1-Daughter2.jpg" } },
+        //      { "Family2-Lady", new[] { "Family2-Lady1.jpg", "Family2-Lady2.jpg" } },
+        //      { "Family2-Man", new[] { "Family2-Man1.jpg", "Family2-Man2.jpg" } }
+        //            };
+        //    // A group photo that includes some of the persons you seek to identify from your dictionary.
+        //    string sourceImageFileName = "identification1.jpg";
+
+        //    // Create a person group. 
+        //    string personGroupId = Guid.NewGuid().ToString();
+        //    sourcePersonGroup = personGroupId; // This is solely for the snapshot operations example
+        //    Console.WriteLine($"Create a person group ({personGroupId}).");
+        //    await client.PersonGroup.CreateAsync(personGroupId, personGroupId, recognitionModel: RECOGNITION_MODEL1);
+        //    // The similar faces will be grouped into a single person group person.
+        //    foreach (var groupedFace in personDictionary.Keys)
+        //    {
+        //        // Limit TPS
+        //        await Task.Delay(250);
+        //        Person person = await client.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: groupedFace);
+        //        Console.WriteLine($"Create a person group person '{groupedFace}'.");
+
+        //        // Add face to the person group person.
+        //        foreach (var similarImage in personDictionary[groupedFace])
+        //        {
+        //            Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
+        //            PersistedFace face = await client.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, person.PersonId,
+        //                $"{url}{similarImage}", similarImage);
+        //        }
+        //    }
+
+        //    // Start to train the person group.
+        //    Console.WriteLine();
+        //    Console.WriteLine($"Train person group {personGroupId}.");
+        //    await client.PersonGroup.TrainAsync(personGroupId);
+
+        //    // Wait until the training is completed.
+        //    while (true)
+        //    {
+        //        await Task.Delay(1000);
+        //        var trainingStatus = await client.PersonGroup.GetTrainingStatusAsync(personGroupId);
+        //        Console.WriteLine($"Training status: {trainingStatus.Status}.");
+        //        if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
+        //    }
+
+        //    List<Guid?> sourceFaceIds = new List<Guid?>();
+        //    // Detect faces from source image url.
+        //    List<DetectedFace> detectedFaces = await DetectFaceRecognize(client, $"{url}{sourceImageFileName}", RECOGNITION_MODEL1);
+
+        //    // Add detected faceId to sourceFaceIds.
+        //    foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
+
+        //    // Identify the faces in a person group. 
+        //    var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId);
+
+        //    foreach (var identifyResult in identifyResults)
+        //    {
+        //        Person person = await client.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
+        //        Console.WriteLine($"Person '{person.Name}' is identified for face in: {sourceImageFileName} - {identifyResult.FaceId}," +
+        //            $" confidence: {identifyResult.Candidates[0].Confidence}.");
+        //    }
+        //    Console.WriteLine();
+        //}
     }
 }
