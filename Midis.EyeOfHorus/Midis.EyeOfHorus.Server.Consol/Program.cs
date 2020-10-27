@@ -29,7 +29,7 @@ namespace Consol
             string uriBase = configuration.GetSection("UriBase").Get<string>();
 
             // Library using
-            FaceDetectionLibrary.DetectFaces(inputFilePath, subscriptionKey, uriBase);
+            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase);
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection)
