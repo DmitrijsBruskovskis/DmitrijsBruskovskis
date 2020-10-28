@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Azure.CognitiveServices.Vision.Face;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Midis.EyeOfHorus.FaceDetectionLibrary;
 using Npgsql;
@@ -28,8 +30,13 @@ namespace Consol
             string subscriptionKey = configuration.GetSection("SubscriptionKey").Get<string>();
             string uriBase = configuration.GetSection("UriBase").Get<string>();
 
+            // Create FaceClient (Azure face API)
+            IFaceClient client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) { Endpoint = "https://midiseu.cognitiveservices.azure.com" };
+            string IMAGE_BASE_URL = inputFilePath;
+
             // Library using
-            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase);
+            //FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase);
+            FaceDetectionLibrary.CreatePersonGroup(client, IMAGE_BASE_URL, RecognitionModel.Recognition03).Wait();
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection)
