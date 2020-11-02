@@ -16,6 +16,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
+        static string sourcePersonGroup = null;
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase)
         {
             // set up Dlib facedetector
@@ -129,18 +130,17 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             // Create a dictionary for all your images, grouping similar ones under the same key.
             Dictionary<string, string[]> personDictionary =
                 new Dictionary<string, string[]>
-                    { { "Toni", new[] { "11.jpg", "111.jpg" } },
-              //{ "Family1-Mom", new[] { "Family1-Mom1.jpg", "Family1-Mom2.jpg" } },
-              //{ "Family1-Son", new[] { "Family1-Son1.jpg", "Family1-Son2.jpg" } },
-              //{ "Family1-Daughter", new[] { "Family1-Daughter1.jpg", "Family1-Daughter2.jpg" } },
-              //{ "Family2-Lady", new[] { "Family2-Lady1.jpg", "Family2-Lady2.jpg" } },
-              //{ "Family2-Man", new[] { "Family2-Man1.jpg", "Family2-Man2.jpg" } }
-                    };
+                { {"Mom", new[] { "Family1-Mom1", "Family1-Mom2" } },
+                { "Toni", new[] { "11.jpg", "111.jpg" } },
+                //{ "Family1-Son", new[] { "Family1-Son1.jpg", "Family1-Son2.jpg" } },
+                //{ "Family1-Daughter", new[] { "Family1-Daughter1.jpg", "Family1-Daughter2.jpg" } },
+                //{ "Family2-Lady", new[] { "Family2-Lady1.jpg", "Family2-Lady2.jpg" } },
+                //{ "Family2-Man", new[] { "Family2-Man1.jpg", "Family2-Man2.jpg" } }
+                };
             // A group photo that includes some of the persons you seek to identify from your dictionary.
-            string sourceImageFileName = "test.jpg";
-
+            string sourceImageFileName = "test2.jpg";
+            
             // Create a person group. 
-            string sourcePersonGroup = null;
             string personGroupId = Guid.NewGuid().ToString();
             sourcePersonGroup = personGroupId; // This is solely for the snapshot operations example
             Console.WriteLine($"Create a person group ({personGroupId}).");
