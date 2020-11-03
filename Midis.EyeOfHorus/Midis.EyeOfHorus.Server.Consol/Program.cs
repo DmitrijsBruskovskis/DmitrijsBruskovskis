@@ -32,9 +32,9 @@ namespace Consol
 
             // Create FaceClient (Azure face API)
             IFaceClient client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) { Endpoint = "https://midiseu.cognitiveservices.azure.com" };
-            //string IMAGE_BASE_URL = "https://drive.google.com/drive/folders/1CelWdtWzC_dQptYLNz0rP6sXgrEXlNXr?usp=sharing/";
+            string IMAGE_BASE_URL = "https://drive.google.com/drive/folders/1CelWdtWzC_dQptYLNz0rP6sXgrEXlNXr?usp=sharing/";
             //string IMAGE_BASE_URL = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Server.Consol/bin/x64/Debug/netcoreapp3.1/Images/";
-            string IMAGE_BASE_URL = "https://onedrive.live.com/?id=1F90A58E448F5E7A%21103&cid=1F90A58E448F5E7A/";
+            //string IMAGE_BASE_URL = "https://onedrive.live.com/?id=1F90A58E448F5E7A%21103&cid=1F90A58E448F5E7A/";
             //string IMAGE_BASE_URL = "https://csdx.blob.core.windows.net/resources/Face/Images/";
 
             // Library using

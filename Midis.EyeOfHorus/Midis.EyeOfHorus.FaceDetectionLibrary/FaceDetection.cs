@@ -130,7 +130,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             // Create a dictionary for all your images, grouping similar ones under the same key.
             Dictionary<string, string[]> personDictionary =
                 new Dictionary<string, string[]>
-                { {"Mom", new[] { "Family1-Mom1", "Family1-Mom2" } },
+                { {"Obama", new[] { "2.jpg", "22.jpg" } },
                 { "Toni", new[] { "11.jpg", "111.jpg" } },
                 //{ "Family1-Son", new[] { "Family1-Son1.jpg", "Family1-Son2.jpg" } },
                 //{ "Family1-Daughter", new[] { "Family1-Daughter1.jpg", "Family1-Daughter2.jpg" } },
