@@ -160,11 +160,9 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     //PersistedFace face = await client.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, person.PersonId,
                     //    $"{url}{similarImage}", similarImage);
 
-                    using (Stream imageFileStream = File.OpenRead($"{url}{similarImage}"))
-                    {
-                        await client.PersonGroupPerson.AddFaceFromStreamAsync(
-                            personGroupId, person.PersonId, imageFileStream);
-                    }
+                    using Stream imageFileStream = File.OpenRead($"{url}{similarImage}");
+                    await client.PersonGroupPerson.AddFaceFromStreamAsync(
+                        personGroupId, person.PersonId, imageFileStream);
                 }
             }
 
@@ -190,8 +188,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
 
             // Identify the faces in a person group. 
-            var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId);
-
+            var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId, null, 1, 0.5, default);
+            //(faceIds, personGroupId, largePersonGroupId, maxNumOfCandidatesReturned, confidenceThreshold)
             foreach (var identifyResult in identifyResults)
             {
                 Person person = await client.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
@@ -203,14 +201,12 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             static async Task<List<DetectedFace>> DetectFaceRecognize(IFaceClient faceClient, string url, string RECOGNITION_MODEL1)
             {
                 // Detect faces from target image.
-                using (Stream imageFileStream = File.OpenRead(url))
-                {
-                    IList<DetectedFace> detectedFaces =
-                        await faceClient.Face.DetectWithStreamAsync(
-                            imageFileStream, true, false);
-                    Console.WriteLine($"{detectedFaces.Count} face(s) detected from image `{Path.GetFileName(url)}`");
-                    return detectedFaces.ToList();
-                }
+                using Stream imageFileStream = File.OpenRead(url);
+                IList<DetectedFace> detectedFaces =
+                    await faceClient.Face.DetectWithStreamAsync(
+                        imageFileStream, true, false);
+                Console.WriteLine($"{detectedFaces.Count} face(s) detected from image `{Path.GetFileName(url)}`");
+                return detectedFaces.ToList();
             }
         }
     }
