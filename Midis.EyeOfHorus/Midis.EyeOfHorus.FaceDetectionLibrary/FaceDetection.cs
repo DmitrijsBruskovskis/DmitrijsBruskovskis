@@ -11,6 +11,8 @@ using Dlib = DlibDotNet.Dlib;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.Linq;
+using System.Text;
+using System.Web;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
@@ -206,6 +208,29 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 Console.WriteLine($"{detectedFaces.Count} face(s) detected from image `{Path.GetFileName(url)}`");
                 return detectedFaces.ToList();
             }
+        }
+
+        static async void MakeRequest()
+        {
+            var client = new HttpClient();
+            var queryString = HttpUtility.ParseQueryString(string.Empty);
+
+            // Request headers
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{585d3cc48b4c4d449862067c6220e753 key}");
+
+            var uri = "https://westeurope.api.cognitive.microsoft.com/face/v1.0/identify?" + queryString;
+
+            HttpResponseMessage response;
+
+            // Request body
+            byte[] byteData = Encoding.UTF8.GetBytes("{body}");
+
+            using (var content = new ByteArrayContent(byteData))
+            {
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                response = await client.PostAsync(uri, content);
+            }
+
         }
     }
 }
