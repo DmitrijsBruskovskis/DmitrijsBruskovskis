@@ -35,8 +35,8 @@ namespace Consol
             string IMAGE_BASE_URL = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Server.Consol/bin/x64/Debug/netcoreapp3.1/Images/";
 
             // Library using
-            //FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase);
-            FaceDetectionLibrary.CreatePersonGroup(client, IMAGE_BASE_URL, RecognitionModel.Recognition03).Wait();
+            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase);
+            //FaceDetectionLibrary.CreatePersonGroupTest(client, IMAGE_BASE_URL, RecognitionModel.Recognition03).Wait();
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection)

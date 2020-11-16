@@ -11,8 +11,6 @@ using Dlib = DlibDotNet.Dlib;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.Linq;
-using System.Text;
-using System.Web;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
@@ -90,10 +88,16 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     // JSON response deserialization in list
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
-                    // Display the JSON response.
+                    //Face group creation
+                    //CreatePersonGroup(IFaceClient client, string url, string RECOGNITION_MODEL1);
+
+                    // Listing each element from JSON response.
                     Console.WriteLine("\nResponse:\n");
                     for (int i = 0; i < infoAboutImage.Count; i++)
                     {
+                        //Person identification
+                        //string personId = CreatePersonGroup(newClient, url, RECOGNITION_MODEL1);
+
                         // Data transfer to the database
                         using (ApplicationContext db = new ApplicationContext())
                         {
@@ -110,7 +114,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         }
                         Console.WriteLine(infoAboutImage[i].FaceId);
                         Console.WriteLine(infoAboutImage[i].FaceRectangle);
-                    }                  
+                    }   
+                    //Face group deletion
                 }
             }
 
@@ -126,8 +131,78 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }    
         }
 
-        // Test group creation
+        //Face group creation
         public static async Task CreatePersonGroup(IFaceClient client, string url, string RECOGNITION_MODEL1)
+        {
+            // Create a dictionary for all your images, grouping similar ones under the same key.
+            Dictionary<string, string[]> personDictionary =
+                new Dictionary<string, string[]>
+                { {"Obama", new[] { "2.jpg", "22.jpg" } },
+                { "Toni", new[] { "11.jpg", "111.jpg" } },
+                };
+            
+            // Create a person group. 
+            string personGroupId = Guid.NewGuid().ToString();
+            sourcePersonGroup = personGroupId; // This is solely for the snapshot operations example
+            Console.WriteLine($"Create a person group ({personGroupId}).");
+            await client.PersonGroup.CreateAsync(personGroupId, personGroupId, null, RECOGNITION_MODEL1);
+            // The similar faces will be grouped into a single person group person.
+            foreach (var groupedFace in personDictionary.Keys)
+            {
+                // Limit TPS
+                await Task.Delay(250);
+                Person person = await client.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: groupedFace);
+                Console.WriteLine($"Create a person group person '{groupedFace}'.");               
+                // Add face to the person group person.
+                foreach (var similarImage in personDictionary[groupedFace])
+                {
+                    Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
+
+                    using Stream imageFileStream = File.OpenRead($"{url}{similarImage}");
+                    await client.PersonGroupPerson.AddFaceFromStreamAsync(
+                        personGroupId, person.PersonId, imageFileStream);
+                }
+            }
+
+            // Start to train the person group.
+            Console.WriteLine();
+            Console.WriteLine($"Train person group {personGroupId}.");
+            await client.PersonGroup.TrainAsync(personGroupId);
+
+            // Wait until the training is completed.
+            while (true)
+            {
+                await Task.Delay(1000);
+                var trainingStatus = await client.PersonGroup.GetTrainingStatusAsync(personGroupId);
+                Console.WriteLine($"Training status: {trainingStatus.Status}.");
+                if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
+            }
+        }
+
+        //Identify faces and return person id's
+        //public static async Task IdentifyFace(IFaceClient client, string url, string RECOGNITION_MODEL1)
+        //{
+        //    List<Guid?> sourceFaceIds = new List<Guid?>();
+
+        //    // Add detected faceId to sourceFaceIds.
+        //    foreach (var detectedFace in detectedFaces)
+        //    {
+        //        sourceFaceIds.Add(detectedFace.FaceId.Value);
+        //    }
+        //    // Identify the faces in a person group. 
+        //    var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId);
+        //    foreach (var identifyResult in identifyResults)
+        //    {
+        //        Person person = await client.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
+        //        Console.WriteLine($"Person '{person.Name}' is identified for face in: {sourceImageFileName} - {identifyResult.FaceId}," +
+        //            $" confidence: {identifyResult.Candidates[0].Confidence}.");
+        //    }
+        //    await client.PersonGroup.DeleteAsync(personGroupId);
+        //    Console.WriteLine();
+        //}
+
+        //Working group creation and face identification example
+        public static async Task CreatePersonGroupTest(IFaceClient client, string url, string RECOGNITION_MODEL1)
         {
             // Create a dictionary for all your images, grouping similar ones under the same key.
             Dictionary<string, string[]> personDictionary =
@@ -140,13 +215,13 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 //{ "Family2-Man", new[] { "Family2-Man1.jpg", "Family2-Man2.jpg" } }
                 };
             // A group photo that includes some of the persons you seek to identify from your dictionary.
-            string sourceImageFileName = "22.jpg";
-            
+            string sourceImageFileName = "test2.jpg";
+
             // Create a person group. 
             string personGroupId = Guid.NewGuid().ToString();
             sourcePersonGroup = personGroupId; // This is solely for the snapshot operations example
             Console.WriteLine($"Create a person group ({personGroupId}).");
-            await client.PersonGroup.CreateAsync(personGroupId, personGroupId, recognitionModel: RECOGNITION_MODEL1);
+            await client.PersonGroup.CreateAsync(personGroupId, personGroupId, null, RECOGNITION_MODEL1);
             // The similar faces will be grouped into a single person group person.
             foreach (var groupedFace in personDictionary.Keys)
             {
@@ -185,17 +260,19 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             List<DetectedFace> detectedFaces = await DetectFaceRecognize(client, $"{url}{sourceImageFileName}", RECOGNITION_MODEL1);
 
             // Add detected faceId to sourceFaceIds.
-            foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
-
+            foreach (var detectedFace in detectedFaces)
+            {
+                sourceFaceIds.Add(detectedFace.FaceId.Value);
+            }
             // Identify the faces in a person group. 
             var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId);
-            //(faceIds, personGroupId, largePersonGroupId, maxNumOfCandidatesReturned, confidenceThreshold)
             foreach (var identifyResult in identifyResults)
             {
                 Person person = await client.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
                 Console.WriteLine($"Person '{person.Name}' is identified for face in: {sourceImageFileName} - {identifyResult.FaceId}," +
                     $" confidence: {identifyResult.Candidates[0].Confidence}.");
             }
+            await client.PersonGroup.DeleteAsync(personGroupId);
             Console.WriteLine();
 
             // Detect faces from target image.
@@ -203,34 +280,11 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             {
                 using Stream imageFileStream = File.OpenRead(url);
                 IList<DetectedFace> detectedFaces =
-                    await faceClient.Face.DetectWithStreamAsync(imageFileStream, true, false);
+                    await faceClient.Face.DetectWithStreamAsync(imageFileStream, true, false, null, RECOGNITION_MODEL1, true);
 
                 Console.WriteLine($"{detectedFaces.Count} face(s) detected from image `{Path.GetFileName(url)}`");
                 return detectedFaces.ToList();
             }
-        }
-
-        static async void MakeRequest()
-        {
-            var client = new HttpClient();
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
-
-            // Request headers
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "{585d3cc48b4c4d449862067c6220e753 key}");
-
-            var uri = "https://westeurope.api.cognitive.microsoft.com/face/v1.0/identify?" + queryString;
-
-            HttpResponseMessage response;
-
-            // Request body
-            byte[] byteData = Encoding.UTF8.GetBytes("{body}");
-
-            using (var content = new ByteArrayContent(byteData))
-            {
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                response = await client.PostAsync(uri, content);
-            }
-
         }
     }
 }
