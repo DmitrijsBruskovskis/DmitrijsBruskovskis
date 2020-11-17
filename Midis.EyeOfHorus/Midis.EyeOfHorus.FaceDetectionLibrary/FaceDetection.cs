@@ -91,6 +91,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     //Face group creation
                     //CreatePersonGroup(IFaceClient client, string url, string RECOGNITION_MODEL1);
 
+                    //
                     // Listing each element from JSON response.
                     Console.WriteLine("\nResponse:\n");
                     for (int i = 0; i < infoAboutImage.Count; i++)
@@ -177,6 +178,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 Console.WriteLine($"Training status: {trainingStatus.Status}.");
                 if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
             }
+            await client.PersonGroup.DeleteAsync(personGroupId);
         }
 
         //Identify faces and return person id's
