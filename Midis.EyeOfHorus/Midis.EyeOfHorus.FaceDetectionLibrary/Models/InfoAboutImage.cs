@@ -4,5 +4,6 @@
     {
         public string FaceId { get; set; }
         public object FaceRectangle { get; set; }
+        public string Worker { get; set; }
     }
 }
