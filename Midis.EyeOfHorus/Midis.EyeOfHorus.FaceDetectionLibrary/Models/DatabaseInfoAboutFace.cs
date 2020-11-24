@@ -2,7 +2,7 @@
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary.Models
 {
-    public class DatabaseInfoAboutImage
+    public class DatabaseInfoAboutFace
     {
         public int Id { get; set; }
         public string Worker { get; set; }

@@ -9,9 +9,6 @@ using System.IO;
 
 namespace Consol
 {
-    /// <summary>
-    /// The main program class
-    /// </summary>
     class Program
     {
         public static IConfigurationRoot configuration;
@@ -29,13 +26,13 @@ namespace Consol
             string inputFilePath = configuration.GetSection("InputFilePath").Get<string>();
             string subscriptionKey = configuration.GetSection("SubscriptionKey").Get<string>();
             string uriBase = configuration.GetSection("UriBase").Get<string>();
+            string vocabularyPath = configuration.GetSection("VocabularyPath").Get<string>();
 
             // Create FaceClient (Azure face API)
             IFaceClient client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) { Endpoint = "https://midiseu.cognitiveservices.azure.com" };
-            string IMAGE_BASE_URL = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Server.Consol/bin/x64/Debug/netcoreapp3.1/FaceVocabulary/";
 
             // Library using
-            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase, client, IMAGE_BASE_URL);
+            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase, client, vocabularyPath);
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection)

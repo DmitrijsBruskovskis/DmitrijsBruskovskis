@@ -16,7 +16,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
-        public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string url)
+        public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string vocabularyPath)
         {
             // set up Dlib facedetector
             DirectoryInfo dir = new DirectoryInfo(inputFilePath);
@@ -35,7 +35,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     if (faces.Length != 0)
                     {
                         Console.WriteLine("Picture " + files.Name + " have faces, sending data to Azure");
-                        MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, files.Name, client, url).Wait();
+                        MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, files.Name, client, vocabularyPath).Wait();
                     }
 
                     foreach (var face in faces)
@@ -49,7 +49,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             // Gets the analysis of the specified image by using the Face REST API.
-            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string url)
+            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string vocabularyPath)
             {
                 HttpClient client = new HttpClient();
 
@@ -114,7 +114,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         {
                             Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
 
-                            using Stream imageFileStream = File.OpenRead($"{url}{similarImage}");
+                            using Stream imageFileStream = File.OpenRead($"{vocabularyPath}{similarImage}");
                             await faceClient.PersonGroupPerson.AddFaceFromStreamAsync(
                                 personGroupId, person.PersonId, imageFileStream);
                         }
@@ -170,7 +170,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     {
                         using (ApplicationContext db = new ApplicationContext())
                         {
-                            DatabaseInfoAboutImage databaseInfoAboutImage = new DatabaseInfoAboutImage
+                            DatabaseInfoAboutFace databaseInfoAboutFace = new DatabaseInfoAboutFace
                             {
                                 ClientId = 1,
                                 CameraId = 1,
@@ -178,7 +178,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                 Worker = infoAboutImage[i].Worker,
                                 FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()         
                             };
-                            db.Add(databaseInfoAboutImage);
+                            db.Add(databaseInfoAboutFace);
                             db.SaveChanges();
                         }
                         Console.WriteLine(infoAboutImage[i].Worker);
