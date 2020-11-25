@@ -92,10 +92,11 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     Console.WriteLine("Person group creation and training");
                     Dictionary<string, string[]> personDictionary =
                         new Dictionary<string, string[]>
-                        { {"Obama", new[] { "1.jpg", "11.jpg" } },
-                        { "Toni", new[] { "2.jpg", "22.jpg" } },
-                        { "Merkel", new[] { "3.jpg", "33.jpg" } },
-                        { "Vladimir", new[] { "4.jpg", "44.jpg" } },
+                        {
+                            {"Obama", new[] { "1.jpg", "11.jpg" } },
+                            { "Toni", new[] { "2.jpg", "22.jpg" } },
+                            { "Merkel", new[] { "3.jpg", "33.jpg" } },
+                            { "Vladimir", new[] { "4.jpg", "44.jpg" } },
                         };
 
                     // Create a person group. 
