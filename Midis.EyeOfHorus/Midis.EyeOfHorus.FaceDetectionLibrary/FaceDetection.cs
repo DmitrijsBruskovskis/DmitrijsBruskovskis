@@ -161,7 +161,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         else
                             foreach (var detectedFace in infoAboutImage)
                             {
-                                detectedFace.Worker = "Unidentified person"; ;
+                                detectedFace.Worker = "Unidentified person";
                             }
                     }
 
