@@ -1,5 +1,4 @@
-﻿
-namespace Midis.EyeOfHorus.Client
+﻿namespace Midis.EyeOfHorus.Client
 {
     partial class Settings
     {
@@ -93,6 +92,7 @@ namespace Midis.EyeOfHorus.Client
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(317, 23);
             this.textBox1.TabIndex = 5;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // txtKey
             // 
