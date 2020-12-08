@@ -137,6 +137,7 @@
             this.Controls.Add(this.button1);
             this.Name = "Settings";
             this.Text = "Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Settings_FormClosing);
             this.Load += new System.EventHandler(this.Settings_Load);
             ((System.ComponentModel.ISupportInitialize)(this.txtFrCount)).EndInit();
             this.ResumeLayout(false);

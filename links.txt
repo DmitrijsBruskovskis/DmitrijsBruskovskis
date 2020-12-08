@@ -1,19 +1,4 @@
 https://portal.azure.com/#@bruskovskisdmitrijsgmail.onmicrosoft.com/resource/subscriptions/f8111403-ffe2-42e9-8234-c844d36b928a/resourceGroups/Test/providers/Microsoft.CognitiveServices/accounts/midiseu/quickstart
 bruskovskisdmitrijs@gmail.com / Lamer1969
 
-https://habr.com/ru/post/301096/
-
-https://qastack.ru/ubuntu/16386/is-there-any-software-that-will-do-face-recognition-in-photos
-
-https://www.nexmo.com/blog/2020/03/18/real-time-face-detection-in-net-with-opentok-and-opencv-dr
-
 https://docs.google.com/document/d/122wd-Oq84jpHMZyBiwo6daCethND0GA_wOHsoFLbOfs/edit - google dokumentacija
-
-
-<<<<<<< .mine
-
-
-=======
-
-
->>>>>>> .theirs

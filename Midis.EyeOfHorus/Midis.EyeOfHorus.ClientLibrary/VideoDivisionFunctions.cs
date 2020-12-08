@@ -7,11 +7,18 @@ namespace Midis.EyeOfHorus.ClientLibrary
 {
     public class VideoDivisionFunctions
     {
-        public static void VideoToFrames()
+        public static void VideoToFrames(string inputPath, decimal framesPerMinute)
         {
-            string command = "C:/Projects/ffmpeg/bin/ffmpeg -i C:/Projects/ffmpeg/VideoForTests/test.mp4 -r 0.01 C:/Projects/ffmpeg/Results/%03d.png";
-            try
+            DirectoryInfo dir = new DirectoryInfo(inputPath);
+            decimal seconds = 60 / framesPerMinute;
+
+            foreach (FileInfo files in dir.GetFiles("*.mp4"))
             {
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(files.FullName);
+                string command = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/bin/ffmpeg -i "
+                                 + inputPath.Replace(@"\\", @"/") + "/" + files.Name + " -vf fps=1/" + seconds +
+                                 " C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/Results/" + fileNameWithoutExtension + "_%03d.png";
+
                 System.Diagnostics.ProcessStartInfo procStartInfo =
                     new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
 
@@ -28,10 +35,6 @@ namespace Midis.EyeOfHorus.ClientLibrary
 
                 Console.WriteLine(result);
                 Console.WriteLine();
-            }
-            catch (Exception objException)
-            {
-                // Log the exception
             }
         }
     }

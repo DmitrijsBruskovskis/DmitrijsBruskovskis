@@ -48,7 +48,7 @@ namespace Midis.EyeOfHorus.Client
             //    FrameCount = Convert.ToInt32(txtFrCount.Value),
             //    ClientKey = txtKey.Text
             //});
-            VideoDivisionFunctions.VideoToFrames();
+            VideoDivisionFunctions.VideoToFrames(textBox1.Text, txtFrCount.Value);
         }
 
         private void logOut_Click(object sender, EventArgs e)
@@ -61,6 +61,11 @@ namespace Midis.EyeOfHorus.Client
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Settings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
