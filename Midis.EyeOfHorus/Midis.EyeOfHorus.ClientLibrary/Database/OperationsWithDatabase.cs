@@ -5,10 +5,10 @@ namespace Midis.EyeOfHorus.ClientLibrary.Database
 {
     public class OperationsWithDatabase
     {
-        //Function example
         public static void DatabaseVersionCheck()
         {
-            string cs = "Data Source=:memory:";
+            //string cs = "Data Source=:memory:";
+            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
             string stm = "SELECT SQLITE_VERSION()";
 
             using var con = new SQLiteConnection(cs);
@@ -19,10 +19,42 @@ namespace Midis.EyeOfHorus.ClientLibrary.Database
 
             Console.WriteLine($"SQLite version: {version}");
         }
+
+        public static void DataInsertIntoDatabase()
+        {
+            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
+
+            using var con = new SQLiteConnection(cs);
+            con.Open();
+
+            using var cmd = new SQLiteCommand(con);
+
+            cmd.CommandText = "INSERT INTO Cameras(Name, OutputFolder) VALUES('FBD-2357','C:/123/')";
+            cmd.ExecuteNonQuery();
+        }
+        public static void GetDataFromDatabase()
+        {
+            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
+
+            using var con = new SQLiteConnection(cs);
+            con.Open();
+
+            string stm = "SELECT * FROM Cameras";
+
+            using var cmd = new SQLiteCommand(stm, con);
+            using SQLiteDataReader rdr = cmd.ExecuteReader();
+
+            while (rdr.Read())
+            {
+                int result1 = rdr.GetInt32(0);
+                string result2 = rdr.GetString(1);
+                string result3 = rdr.GetString(2);
+            }
+        }
         //Function example
         public static void DatabaseCreation()
         {
-            string cs = @"URI=file:C:\Users\Jano\Documents\test.db";
+            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
 
             using var con = new SQLiteConnection(cs);
             con.Open();
@@ -37,27 +69,6 @@ namespace Midis.EyeOfHorus.ClientLibrary.Database
             cmd.ExecuteNonQuery();
 
             cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Audi',52642)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Mercedes',57127)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Skoda',9000)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Volvo',29000)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Bentley',350000)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Citroen',21000)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Hummer',41400)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Volkswagen',21600)";
             cmd.ExecuteNonQuery();
 
             Console.WriteLine("Table cars created");

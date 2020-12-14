@@ -23,7 +23,7 @@ namespace Midis.EyeOfHorus.Client
             if (login)
             {
                 this.Hide();
-                new Settings().Show();
+                new Iestatijumi().Show();
             }
         }
 
