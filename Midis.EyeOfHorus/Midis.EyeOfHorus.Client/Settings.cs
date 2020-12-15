@@ -17,49 +17,36 @@ namespace Midis.EyeOfHorus.Client
         public Iestatijumi()
         {
             InitializeComponent();
-            LoadData();
+
+            //LoadData();
             ////notiks kļuda, ja nebūs po.xml faila!!!
             //var response = new SettingsSerializationHelper().ReadCD("po.xml");
             //txtFrCount.Text = Convert.ToString(response.FrameCount);
             //txtKey.Text = response.ClientKey;
+
         }
 
-        public void LoadData()
+        SQLiteConnection con;
+        SQLiteDataAdapter da;
+        SQLiteCommand cmd;
+        DataSet ds;
+
+        void GetList()
         {
             string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
-
-            using var con = new SQLiteConnection(cs);
-
+            con = new SQLiteConnection(cs);
+            da = new SQLiteDataAdapter("Select * From Cameras", con);
+            ds = new DataSet();
             con.Open();
-
-            string stm = "SELECT * FROM Cameras ORDER BY ID";
-
-            using var cmd = new SQLiteCommand(stm, con);
-
-            using SQLiteDataReader rdr = cmd.ExecuteReader();
-
-            List<string[]> data = new List<string[]>();
-
-            while (rdr.Read())
-            {
-                data.Add(new string[3]);
-
-                data[data.Count - 1][0] = rdr[0].ToString();
-                data[data.Count - 1][1] = rdr[1].ToString();
-                data[data.Count - 1][2] = rdr[2].ToString();
-            }
-
-            rdr.Close();
-
+            da.Fill(ds, "Cameras");
+            dataGridView1.DataSource = ds.Tables["Cameras"];
             con.Close();
-
-            foreach (string[] s in data)
-                dataGridView1.Rows.Add(s);
+            dataGridView1_CellClick(this, new DataGridViewCellEventArgs(0, 0));
         }
 
         private void Settings_Load(object sender, EventArgs e)
         {
-         
+            GetList();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -83,7 +70,7 @@ namespace Midis.EyeOfHorus.Client
             //    FrameCount = Convert.ToInt32(txtFrCount.Value),
             //    ClientKey = txtKey.Text
             //});
-            VideoDivisionFunctions.VideoToFrames(textBox1.Text, txtFrCount.Value);
+            VideoDivisionFunctions.VideoToFrames(textBox4.Text, txtFrCount.Value);
         }
 
         private void logOut_Click(object sender, EventArgs e)
@@ -111,6 +98,84 @@ namespace Midis.EyeOfHorus.Client
         private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            cmd = new SQLiteCommand();
+            con.Open();
+            cmd.Connection = con;
+            cmd.CommandText = "insert into Cameras(Name,OutputFolder) values ('" + textBox3.Text + "','" + textBox4.Text + "')";
+            cmd.ExecuteNonQuery();
+            con.Close();
+            GetList();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            cmd = new SQLiteCommand();
+            con.Open();
+            cmd.Connection = con;
+            cmd.CommandText = "update Cameras set Name='" + textBox3.Text + "',OutputFolder='" + textBox4.Text + "' where ID=" + textBox2.Text + "";
+            cmd.ExecuteNonQuery();
+            con.Close();
+            GetList();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            cmd = new SQLiteCommand();
+            con.Open();
+            cmd.Connection = con;
+            cmd.CommandText = "delete from Cameras where ID=" + textBox2.Text + "";
+            cmd.ExecuteNonQuery();
+            con.Close();
+            GetList();
+        }
+
+        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            textBox2.Text = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+            textBox3.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+            textBox4.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+        }
+
+        private void dataGridView1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                textBox4.Text = folderBrowserDialog1.SelectedPath;
+            }
         }
     }
 }
