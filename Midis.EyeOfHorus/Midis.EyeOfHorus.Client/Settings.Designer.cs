@@ -52,7 +52,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(460, 12);
+            this.button1.Location = new System.Drawing.Point(624, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(113, 23);
             this.button1.TabIndex = 0;
@@ -63,7 +63,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(25, 198);
+            this.label2.Location = new System.Drawing.Point(26, 195);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(115, 15);
             this.label2.TabIndex = 2;
@@ -72,7 +72,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(25, 230);
+            this.label3.Location = new System.Drawing.Point(26, 227);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 15);
             this.label3.TabIndex = 3;
@@ -80,7 +80,7 @@
             // 
             // txtFrCount
             // 
-            this.txtFrCount.Location = new System.Drawing.Point(147, 198);
+            this.txtFrCount.Location = new System.Drawing.Point(148, 195);
             this.txtFrCount.Name = "txtFrCount";
             this.txtFrCount.Size = new System.Drawing.Size(100, 23);
             this.txtFrCount.TabIndex = 4;
@@ -91,18 +91,18 @@
             // 
             // txtKey
             // 
-            this.txtKey.Location = new System.Drawing.Point(147, 230);
+            this.txtKey.Location = new System.Drawing.Point(148, 227);
             this.txtKey.Name = "txtKey";
             this.txtKey.Size = new System.Drawing.Size(100, 23);
             this.txtKey.TabIndex = 6;
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(495, 222);
+            this.btnConfirm.Location = new System.Drawing.Point(604, 219);
             this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(75, 23);
+            this.btnConfirm.Size = new System.Drawing.Size(133, 23);
             this.btnConfirm.TabIndex = 8;
-            this.btnConfirm.Text = "Saglabāt izmaiņas";
+            this.btnConfirm.Text = "Sākt darbu";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
@@ -125,7 +125,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.Size = new System.Drawing.Size(543, 106);
+            this.dataGridView1.Size = new System.Drawing.Size(707, 106);
             this.dataGridView1.TabIndex = 10;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.Click += new System.EventHandler(this.dataGridView1_Click);
@@ -171,7 +171,7 @@
             // 
             this.textBox4.Location = new System.Drawing.Point(433, 153);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(140, 23);
+            this.textBox4.Size = new System.Drawing.Size(304, 23);
             this.textBox4.TabIndex = 15;
             // 
             // label4
@@ -216,7 +216,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(605, 273);
+            this.ClientSize = new System.Drawing.Size(770, 272);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
