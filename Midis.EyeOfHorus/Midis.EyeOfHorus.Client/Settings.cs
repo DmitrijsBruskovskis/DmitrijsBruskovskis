@@ -68,8 +68,23 @@ namespace Midis.EyeOfHorus.Client
             //    FrameCount = Convert.ToInt32(txtFrCount.Value),
             //    ClientKey = txtKey.Text
             //});
-            if (txtFrCount.Value != 0)
-                VideoDivisionFunctions.VideoToFrames(textBox4.Text, txtFrCount.Value);
+
+            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
+            con = new SQLiteConnection(cs);
+            da = new SQLiteDataAdapter("SELECT * From Cameras", con);
+            ds = new DataSet();
+            con.Open();
+            da.Fill(ds, "Cameras");
+            con.Close();
+
+            var InputPathList = new List<string>();
+            foreach (DataRow row in ds.Tables["Cameras"].Rows)
+            {
+                InputPathList.Add(row["OutputFolder"].ToString());
+            }
+
+            if (InputPathList.Count != 0)
+                VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }

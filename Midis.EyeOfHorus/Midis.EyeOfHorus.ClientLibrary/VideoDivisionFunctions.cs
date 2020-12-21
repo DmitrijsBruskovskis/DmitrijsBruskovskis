@@ -7,34 +7,37 @@ namespace Midis.EyeOfHorus.ClientLibrary
 {
     public class VideoDivisionFunctions
     {
-        public static void VideoToFrames(string inputPath, decimal framesPerMinute)
+        public static void VideoToFrames(List<string> inputPathList, decimal framesPerMinute)
         {
-            DirectoryInfo dir = new DirectoryInfo(inputPath);
-            decimal seconds = 60 / framesPerMinute;
-
-            foreach (FileInfo files in dir.GetFiles("*.mp4"))
+            foreach (var inputPath in inputPathList)
             {
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(files.FullName);
-                string command = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/bin/ffmpeg -i "
-                                 + inputPath.Replace(@"\\", @"/") + "/" + files.Name + " -vf fps=1/" + seconds +
-                                 " C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/Results/" + fileNameWithoutExtension + "_%03d.png";
+                DirectoryInfo dir = new DirectoryInfo(inputPath);
+                decimal seconds = 60 / framesPerMinute;
 
-                System.Diagnostics.ProcessStartInfo procStartInfo =
-                    new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
+                foreach (FileInfo files in dir.GetFiles("*.mp4"))
+                {
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(files.FullName);
+                    string command = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/bin/ffmpeg -i "
+                                     + inputPath.Replace(@"\\", @"/") + "/" + files.Name + " -vf fps=1/" + seconds +
+                                     " C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/Results/" + fileNameWithoutExtension + "_%03d.png";
 
-                procStartInfo.RedirectStandardOutput = true;
-                procStartInfo.UseShellExecute = false;
+                    System.Diagnostics.ProcessStartInfo procStartInfo =
+                        new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
 
-                procStartInfo.CreateNoWindow = false;
+                    procStartInfo.RedirectStandardOutput = true;
+                    procStartInfo.UseShellExecute = false;
 
-                System.Diagnostics.Process proc = new System.Diagnostics.Process();
-                proc.StartInfo = procStartInfo;
-                proc.Start();
+                    procStartInfo.CreateNoWindow = false;
 
-                string result = proc.StandardOutput.ReadToEnd();
+                    System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                    proc.StartInfo = procStartInfo;
+                    proc.Start();
 
-                Console.WriteLine(result);
-                Console.WriteLine();
+                    string result = proc.StandardOutput.ReadToEnd();
+
+                    Console.WriteLine(result);
+                    Console.WriteLine();
+                }
             }
         }
     }
