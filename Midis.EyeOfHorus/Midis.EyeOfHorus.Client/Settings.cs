@@ -83,7 +83,7 @@ namespace Midis.EyeOfHorus.Client
                 InputPathList.Add(row["OutputFolder"].ToString());
             }
 
-            if (InputPathList.Count != 0)
+            if (InputPathList.Count != 0 && txtFrCount.Value!= 0)
                 VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");

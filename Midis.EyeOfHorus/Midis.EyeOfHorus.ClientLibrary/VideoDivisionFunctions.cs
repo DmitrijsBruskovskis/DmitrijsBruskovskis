@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 
 namespace Midis.EyeOfHorus.ClientLibrary
 {
@@ -9,6 +10,9 @@ namespace Midis.EyeOfHorus.ClientLibrary
     {
         public static void VideoToFrames(List<string> inputPathList, decimal framesPerMinute)
         {
+            Restart:
+            Stopwatch sWatch = new Stopwatch();
+            sWatch.Start();
             foreach (var inputPath in inputPathList)
             {
                 DirectoryInfo dir = new DirectoryInfo(inputPath);
@@ -21,15 +25,15 @@ namespace Midis.EyeOfHorus.ClientLibrary
                                      + inputPath.Replace(@"\\", @"/") + "/" + files.Name + " -vf fps=1/" + seconds +
                                      " C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/Results/" + fileNameWithoutExtension + "_%03d.png";
 
-                    System.Diagnostics.ProcessStartInfo procStartInfo =
-                        new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
+                    ProcessStartInfo procStartInfo =
+                        new ProcessStartInfo("cmd", "/c " + command);
 
                     procStartInfo.RedirectStandardOutput = true;
                     procStartInfo.UseShellExecute = false;
 
                     procStartInfo.CreateNoWindow = false;
 
-                    System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                    Process proc = new Process();
                     proc.StartInfo = procStartInfo;
                     proc.Start();
 
@@ -39,6 +43,12 @@ namespace Midis.EyeOfHorus.ClientLibrary
                     Console.WriteLine();
                 }
             }
+            sWatch.Stop();
+            ifTimeThenRestart:
+            if (sWatch.ElapsedMilliseconds > 60000)
+                goto Restart;
+            sWatch.Start();
+            goto ifTimeThenRestart;
         }
     }
 }
