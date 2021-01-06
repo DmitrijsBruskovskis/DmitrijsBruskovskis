@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -30,6 +32,7 @@ namespace Midis.EyeOfHorus.Client
         SQLiteDataAdapter da;
         SQLiteCommand cmd;
         DataSet ds;
+        Thread newThread;
 
         void GetList()
         {
@@ -84,7 +87,12 @@ namespace Midis.EyeOfHorus.Client
             }
 
             if (InputPathList.Count != 0 && txtFrCount.Value!= 0)
-                VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
+            {
+                newThread = new Thread(() => VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value));
+                newThread.IsBackground = true;
+                newThread.Start();
+                //VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
+            }
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }
@@ -192,6 +200,11 @@ namespace Midis.EyeOfHorus.Client
             {
                 textBox4.Text = folderBrowserDialog1.SelectedPath;
             }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

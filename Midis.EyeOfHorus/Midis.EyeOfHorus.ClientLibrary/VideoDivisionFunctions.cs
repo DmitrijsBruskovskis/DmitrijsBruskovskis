@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Midis.EyeOfHorus.ClientLibrary
 {
@@ -10,7 +11,10 @@ namespace Midis.EyeOfHorus.ClientLibrary
     {
         public static void VideoToFrames(List<string> inputPathList, decimal framesPerMinute)
         {
+            bool breakNow = false;
             Restart:
+            if (breakNow)
+                return;
             Stopwatch sWatch = new Stopwatch();
             sWatch.Start();
             foreach (var inputPath in inputPathList)
@@ -47,8 +51,14 @@ namespace Midis.EyeOfHorus.ClientLibrary
             ifTimeThenRestart:
             if (sWatch.ElapsedMilliseconds > 60000)
                 goto Restart;
-            sWatch.Start();
+            else
+            {
+                sWatch.Start();
+                long timeToSleep;
+                timeToSleep = 60000 - sWatch.ElapsedMilliseconds;
+                Thread.Sleep((int)(timeToSleep / 1000));
+            }
             goto ifTimeThenRestart;
-        }
+        }       
     }
 }
