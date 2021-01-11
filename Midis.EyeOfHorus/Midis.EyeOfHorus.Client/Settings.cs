@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.ServiceProcess;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -32,7 +33,7 @@ namespace Midis.EyeOfHorus.Client
         SQLiteDataAdapter da;
         SQLiteCommand cmd;
         DataSet ds;
-        Thread newThread;
+        //Thread newThread;
 
         void GetList()
         {
@@ -86,12 +87,16 @@ namespace Midis.EyeOfHorus.Client
                 InputPathList.Add(row["OutputFolder"].ToString());
             }
 
-            if (InputPathList.Count != 0 && txtFrCount.Value!= 0)
+            if (InputPathList.Count != 0)
             {
-                newThread = new Thread(() => VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value));
-                newThread.IsBackground = true;
-                newThread.Start();
+                //newThread = new Thread(() => VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value));
+                //newThread.IsBackground = true;
+                //newThread.Start();
+
                 //VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
+
+                ServiceController sc = new ServiceController("VideoDivisionService");
+                sc.Start();
             }
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
@@ -204,7 +209,8 @@ namespace Midis.EyeOfHorus.Client
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            Application.Exit();
+            ServiceController sc = new ServiceController("VideoDivisionService");
+            sc.Stop();
         }
     }
 }

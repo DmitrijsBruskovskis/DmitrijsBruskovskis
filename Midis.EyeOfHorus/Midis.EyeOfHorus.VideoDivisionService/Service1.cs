@@ -1,22 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace Midis.EyeOfHorus.ClientLibrary
+namespace VideoDivisionRestarter
 {
-    public class VideoDivisionFunctions
+    public partial class Service1 : ServiceBase
     {
+        VideoDivisionComponent videoDivisionComponent;
+        public Service1()
+        {
+            InitializeComponent();
+            this.CanStop = true;
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            videoDivisionComponent = new VideoDivisionComponent();
+            Thread videoDivisionThread = new Thread(new ThreadStart(videoDivisionComponent.Start));
+            videoDivisionThread.Start();
+        }
+
+        protected override void OnStop()
+        {
+            videoDivisionComponent.Stop();
+            Thread.Sleep(1000);
+        }       
+    }
+    public class VideoDivisionComponent
+    {
+        bool enabled = true;
+        public void Start()
+        {
+            //VideoToFrames(framesPerMinute, inputPathList);
+            while (enabled)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+        public void Stop()
+        {
+            enabled = false;
+        }
+
         public static void VideoToFrames(List<string> inputPathList, decimal framesPerMinute)
         {
-            //bool breakNow = false;
-            //Restart:
-            //if (breakNow)
-            //    return;
-            //Stopwatch sWatch = new Stopwatch();
-            //sWatch.Start();
             foreach (var inputPath in inputPathList)
             {
                 DirectoryInfo dir = new DirectoryInfo(inputPath);
@@ -47,18 +82,6 @@ namespace Midis.EyeOfHorus.ClientLibrary
                     Console.WriteLine();
                 }
             }
-            //sWatch.Stop();
-            //ifTimeThenRestart:
-            //if (sWatch.ElapsedMilliseconds > 60000)
-            //    goto Restart;
-            //else
-            //{
-            //    sWatch.Start();
-            //    long timeToSleep;
-            //    timeToSleep = 60000 - sWatch.ElapsedMilliseconds;
-            //    Thread.Sleep((int)(timeToSleep / 1000));
-            //}
-            //goto ifTimeThenRestart;
-        }       
+        }
     }
 }

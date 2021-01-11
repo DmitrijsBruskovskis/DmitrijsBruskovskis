@@ -82,9 +82,24 @@
             // txtFrCount
             // 
             this.txtFrCount.Location = new System.Drawing.Point(148, 195);
+            this.txtFrCount.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.txtFrCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.txtFrCount.Name = "txtFrCount";
             this.txtFrCount.Size = new System.Drawing.Size(100, 23);
             this.txtFrCount.TabIndex = 4;
+            this.txtFrCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // folderBrowserDialog1
             // 
