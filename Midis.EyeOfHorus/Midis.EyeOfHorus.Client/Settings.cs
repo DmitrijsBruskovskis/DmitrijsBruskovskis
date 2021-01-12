@@ -12,6 +12,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ServiceProcess;
+using System.Linq;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -33,7 +34,8 @@ namespace Midis.EyeOfHorus.Client
         SQLiteDataAdapter da;
         SQLiteCommand cmd;
         DataSet ds;
-        //Thread newThread;
+        ServiceController sc = new ServiceController("VideoDivisionService");
+        string processName = "ffmpeg";
 
         void GetList()
         {
@@ -86,18 +88,16 @@ namespace Midis.EyeOfHorus.Client
             {
                 InputPathList.Add(row["OutputFolder"].ToString());
             }
+            InputPathList.Add(txtFrCount.Value.ToString());
+            string[] inputPathListArray = InputPathList.ToArray();
 
+            bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
+
+            if (processExists)
+                MessageBox.Show("Serviss vēl neapstājas, lūdzu, uzgaidiet", "Kļūdas paziņojums");
+            else
             if (InputPathList.Count != 0)
-            {
-                //newThread = new Thread(() => VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value));
-                //newThread.IsBackground = true;
-                //newThread.Start();
-
-                //VideoDivisionFunctions.VideoToFrames(InputPathList, txtFrCount.Value);
-
-                ServiceController sc = new ServiceController("VideoDivisionService");
-                sc.Start();
-            }
+                sc.Start(inputPathListArray);
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }
@@ -209,8 +209,11 @@ namespace Midis.EyeOfHorus.Client
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            ServiceController sc = new ServiceController("VideoDivisionService");
-            sc.Stop();
+            bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
+            if (!processExists)
+                MessageBox.Show("Serviss jau apstājas vai procesā", "Kļūdas paziņojums");
+            else
+                sc.Stop();
         }
     }
 }
