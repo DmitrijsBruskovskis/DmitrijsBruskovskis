@@ -55,20 +55,19 @@ namespace VideoDivisionRestarter
 
             while (enabled)
             {
-                Stopwatch sWatch = new Stopwatch();
-                sWatch.Start();
+                Stopwatch sWatch = Stopwatch.StartNew();
                 foreach (var inputPath in inputPathList)
                 {
                     DirectoryInfo dir = new DirectoryInfo(inputPath);
                     decimal seconds = 60 / framesPerMinute;
 
-                    foreach (FileInfo files in dir.GetFiles("*.mp4"))
+                    foreach (FileInfo file in dir.GetFiles("*.mp4"))
                     {
                         if (!enabled)
                             break;
-                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(files.FullName);
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
                         string command = "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/bin/ffmpeg -i "
-                                         + inputPath.Replace(@"\\", @"/") + "/" + files.Name + " -vf fps=1/" + seconds +
+                                         + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds +
                                          " C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/Results/" + fileNameWithoutExtension + "_%03d.png";
 
                         ProcessStartInfo procStartInfo =
@@ -87,15 +86,16 @@ namespace VideoDivisionRestarter
 
                         Console.WriteLine(result);
                         Console.WriteLine();
+
+                        File.Move(file.FullName, "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.Client/bin/Debug/netcoreapp3.1/ffmpeg/VideoAfterDivisionToFrames/" + file.Name);
                     }
                 }
+                //Thread.Sleep(60000);
                 sWatch.Stop();
-                if (sWatch.ElapsedMilliseconds >= 60000)
-                    continue;
-                else
+                if (sWatch.ElapsedMilliseconds < 60000)
                 {
                     long timeToSleep = 60000 - sWatch.ElapsedMilliseconds;
-                    Thread.Sleep((int)(timeToSleep / 1000));
+                    Thread.Sleep((int)(timeToSleep));
                 }
             }
         }

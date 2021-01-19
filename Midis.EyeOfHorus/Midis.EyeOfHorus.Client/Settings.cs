@@ -36,6 +36,7 @@ namespace Midis.EyeOfHorus.Client
         DataSet ds;
         ServiceController sc = new ServiceController("VideoDivisionService");
         string processName = "ffmpeg";
+        bool running = false;
 
         void GetList()
         {
@@ -91,13 +92,16 @@ namespace Midis.EyeOfHorus.Client
             InputPathList.Add(txtFrCount.Value.ToString());
             string[] inputPathListArray = InputPathList.ToArray();
 
-            bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
+            //bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
 
-            if (processExists)
+            if (running)
                 MessageBox.Show("Serviss vēl neapstājas, lūdzu, uzgaidiet", "Kļūdas paziņojums");
             else
             if (InputPathList.Count != 0)
+            {
+                running = true;
                 sc.Start(inputPathListArray);
+            }
             else
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }
@@ -209,11 +213,15 @@ namespace Midis.EyeOfHorus.Client
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
-            if (!processExists)
-                MessageBox.Show("Serviss jau apstājas vai procesā", "Kļūdas paziņojums");
-            else
+            //bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
+            //if (sc.Status == ServiceControllerStatus.Running)
+            if (running)
+            {
                 sc.Stop();
+                running = false;
+            }
+            else
+                MessageBox.Show("Serviss jau apstājas vai procesā", "Kļūdas paziņojums");
         }
     }
 }
