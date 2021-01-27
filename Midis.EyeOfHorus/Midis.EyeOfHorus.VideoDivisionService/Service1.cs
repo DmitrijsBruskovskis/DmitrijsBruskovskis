@@ -48,7 +48,10 @@ namespace VideoDivisionRestarter
         {
             var ffmpeg = ConfigurationManager.AppSettings["ffmpegPath"];
             var resultPath = ConfigurationManager.AppSettings["resultFilePath"];
-            /*var ffmpeg = Properties.Settings.Default.ffmpegPath;*/
+            var afterDivisionPath = ConfigurationManager.AppSettings["videoAfterDivisionPath"];
+
+            var ffmpegAbsolutePath = Path.GetFullPath(ffmpeg);
+
             List<string> inputPathList = null;
             decimal framesPerMinute = 0;
             for (int i = 1; i < 2; i++)
@@ -71,7 +74,7 @@ namespace VideoDivisionRestarter
                         if (!enabled)
                             break;
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
-                        string command = ffmpeg + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + resultPath + fileNameWithoutExtension + "_%03d.png";
+                        string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultPath + fileNameWithoutExtension + "_%03d.png";
 
                         ProcessStartInfo procStartInfo =
                             new ProcessStartInfo("cmd", "/c " + command);
@@ -90,7 +93,7 @@ namespace VideoDivisionRestarter
                         Console.WriteLine(result);
                         Console.WriteLine();
 
-                        File.Move(file.FullName, "C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/ffmpeg/VideoAfterDivisionToFrames/" + file.Name);
+                        File.Move(file.FullName, afterDivisionPath + file.Name);
                     }
                 }
                 sWatch.Stop();

@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ServiceProcess;
 using System.Linq;
+using System.IO;
 
 namespace Midis.EyeOfHorus.Client
 {
