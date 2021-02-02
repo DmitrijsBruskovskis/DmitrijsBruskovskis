@@ -224,5 +224,10 @@ namespace Midis.EyeOfHorus.Client
             else
                 MessageBox.Show("Serviss jau apstājas vai procesā", "Kļūdas paziņojums");
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Path.GetFullPath("ffmpeg/bin/ffmpeg.exe"));
+        }
     }
 }
