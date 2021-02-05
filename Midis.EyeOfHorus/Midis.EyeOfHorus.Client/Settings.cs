@@ -107,13 +107,6 @@ namespace Midis.EyeOfHorus.Client
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }
 
-        private void logOut_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            Login fl = new Login();
-            fl.Show();
-        }
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
@@ -227,7 +220,8 @@ namespace Midis.EyeOfHorus.Client
 
         private void button7_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(Path.GetFullPath("ffmpeg/bin/ffmpeg.exe"));
+            //MessageBox.Show(Path.GetFullPath("ffmpeg/bin/ffmpeg.exe"));
+            MessageBox.Show(AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
         }
     }
 }

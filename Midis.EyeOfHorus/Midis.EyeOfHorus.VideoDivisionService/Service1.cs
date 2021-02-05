@@ -51,6 +51,14 @@ namespace VideoDivisionRestarter
             var afterDivisionPath = ConfigurationManager.AppSettings["videoAfterDivisionPath"];
 
             var ffmpegAbsolutePath = Path.GetFullPath(ffmpeg);
+            var resultAbsolutePath = Path.GetFullPath(resultPath);
+            var afterDivisionAbsolutePath = Path.GetFullPath(afterDivisionPath);
+
+            //StreamWriter sw = new StreamWriter("C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/Test.txt");
+            //sw.WriteLine(ffmpegAbsolutePath);
+            //sw.WriteLine(resultAbsolutePath);
+            //sw.WriteLine(afterDivisionAbsolutePath);
+            //sw.Close();
 
             List<string> inputPathList = null;
             decimal framesPerMinute = 0;
@@ -74,8 +82,10 @@ namespace VideoDivisionRestarter
                         if (!enabled)
                             break;
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
-                        string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultPath + fileNameWithoutExtension + "_%03d.png";
-
+                        string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultAbsolutePath + fileNameWithoutExtension + "_%03d.png";
+                        //StreamWriter sw2 = new StreamWriter("C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/Test2.txt");
+                        //sw2.WriteLine(command);
+                        //sw2.Close();
                         ProcessStartInfo procStartInfo =
                             new ProcessStartInfo("cmd", "/c " + command);
 
@@ -93,7 +103,7 @@ namespace VideoDivisionRestarter
                         Console.WriteLine(result);
                         Console.WriteLine();
 
-                        File.Move(file.FullName, afterDivisionPath + file.Name);
+                        File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
                     }
                 }
                 sWatch.Stop();

@@ -17,7 +17,7 @@ namespace Midis.EyeOfHorus.Client
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Iestatijumi());
+            Application.Run(new Iestatijumi());           
         }
     }
 }
