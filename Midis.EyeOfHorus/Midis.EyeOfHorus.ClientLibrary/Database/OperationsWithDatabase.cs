@@ -1,46 +1,38 @@
 ﻿using System;
+using System.Data;
 using System.Data.SQLite;
+using System.IO;
 
 namespace Midis.EyeOfHorus.ClientLibrary.Database
 {
     public class OperationsWithDatabase
     {
-        public static void DatabaseVersionCheck()
+        public SQLiteConnection con;
+        SQLiteDataAdapter da;
+        DataSet ds;
+        SQLiteCommand cmd;
+
+        public DataSet GetDataSet()
         {
-            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
-            string stm = "SELECT SQLITE_VERSION()";
-
-            using var con = new SQLiteConnection(cs);
+            string databasePath = Path.GetFullPath("../../../../Midis.EyeOfHorus.ClientLibrary/Database/DataBase.db");
+            string cs = @"URI=file:" + databasePath;
+            con = new SQLiteConnection(cs);
+            da = new SQLiteDataAdapter("Select * From Cameras", con);
+            ds = new DataSet();
             con.Open();
-
-            using var cmd = new SQLiteCommand(stm, con);
-            string version = cmd.ExecuteScalar().ToString();
-
-            Console.WriteLine($"SQLite version: {version}");
+            da.Fill(ds, "Cameras");
+            con.Close();
+            return ds;
         }
 
-        //Function example
-        public static void DatabaseCreation()
+        public void ExecuteCommand(string commandText)
         {
-            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
-
-            using var con = new SQLiteConnection(cs);
+            cmd = new SQLiteCommand();
             con.Open();
-
-            using var cmd = new SQLiteCommand(con);
-
-            cmd.CommandText = "DROP TABLE IF EXISTS cars";
+            cmd.Connection = con;
+            cmd.CommandText = commandText;
             cmd.ExecuteNonQuery();
-
-            cmd.CommandText = @"CREATE TABLE cars(id INTEGER PRIMARY KEY,
-                    name TEXT, price INT)";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = "INSERT INTO cars(name, price) VALUES('Audi',52642)";
-            cmd.ExecuteNonQuery();
-
-            Console.WriteLine("Table cars created");
+            con.Close();
         }
-
     }
 }

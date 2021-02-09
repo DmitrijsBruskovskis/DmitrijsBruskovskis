@@ -14,6 +14,7 @@ using System.Xml.Serialization;
 using System.ServiceProcess;
 using System.Linq;
 using System.IO;
+using Midis.EyeOfHorus.ClientLibrary.Database;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -31,24 +32,15 @@ namespace Midis.EyeOfHorus.Client
 
         }
 
-        SQLiteConnection con;
-        SQLiteDataAdapter da;
-        SQLiteCommand cmd;
         DataSet ds;
         ServiceController sc = new ServiceController("VideoDivisionService");
-        string processName = "ffmpeg";
         bool running = false;
+        OperationsWithDatabase OpWithDB = new OperationsWithDatabase();
 
         void GetList()
         {
-            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
-            con = new SQLiteConnection(cs);
-            da = new SQLiteDataAdapter("Select * From Cameras", con);
-            ds = new DataSet();
-            con.Open();
-            da.Fill(ds, "Cameras");
+            ds = OpWithDB.GetDataSet();
             dataGridView1.DataSource = ds.Tables["Cameras"];
-            con.Close();
             dataGridView1_CellClick(this, new DataGridViewCellEventArgs(0, 0));
         }
 
@@ -56,18 +48,6 @@ namespace Midis.EyeOfHorus.Client
         {
             GetList();
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            ChooseFolder();
-        }
-
-        #region private methods
-        private void ChooseFolder()
-        {
-
-        }
-        #endregion
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
@@ -77,13 +57,7 @@ namespace Midis.EyeOfHorus.Client
             //    ClientKey = txtKey.Text
             //});
 
-            string cs = @"URI=file:C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.ClientLibrary\Database\DataBase.db";
-            con = new SQLiteConnection(cs);
-            da = new SQLiteDataAdapter("SELECT * From Cameras", con);
-            ds = new DataSet();
-            con.Open();
-            da.Fill(ds, "Cameras");
-            con.Close();
+            ds = OpWithDB.GetDataSet();
 
             var InputPathList = new List<string>();
             foreach (DataRow row in ds.Tables["Cameras"].Rows)
@@ -92,8 +66,6 @@ namespace Midis.EyeOfHorus.Client
             }
             InputPathList.Add(txtFrCount.Value.ToString());
             string[] inputPathListArray = InputPathList.ToArray();
-
-            //bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
 
             if (running)
                 MessageBox.Show("Serviss vēl neapstājas, lūdzu, uzgaidiet", "Kļūdas paziņojums");
@@ -107,94 +79,40 @@ namespace Midis.EyeOfHorus.Client
                 MessageBox.Show("Nepareizi uzdoti parametri!", "Kļūdas paziņojums");
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
             Application.Exit();
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         private void button3_Click(object sender, EventArgs e)
         {
-            cmd = new SQLiteCommand();
-            con.Open();
-            cmd.Connection = con;
-            cmd.CommandText = "insert into Cameras(Name,OutputFolder) values ('" + textBox3.Text + "','" + textBox4.Text + "')";
-            cmd.ExecuteNonQuery();
-            con.Close();
+            string commandText = "insert into Cameras(Name,OutputFolder) values ('" + textBox3.Text + "','" + textBox4.Text + "')";
+            OpWithDB.ExecuteCommand(commandText);
             GetList();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            cmd = new SQLiteCommand();
-            con.Open();
-            cmd.Connection = con;
-            cmd.CommandText = "update Cameras set Name='" + textBox3.Text + "',OutputFolder='" + textBox4.Text + "' where ID=" + textBox2.Text + "";
-            cmd.ExecuteNonQuery();
-            con.Close();
+            string commandText = "update Cameras set Name='" + textBox3.Text + "',OutputFolder='" + textBox4.Text + "' where ID=" + textBox2.Text + "";
+            OpWithDB.ExecuteCommand(commandText);
             GetList();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            cmd = new SQLiteCommand();
-            con.Open();
-            cmd.Connection = con;
-            cmd.CommandText = "delete from Cameras where ID=" + textBox2.Text + "";
-            cmd.ExecuteNonQuery();
-            con.Close();
+            string commandText = "delete from Cameras where ID=" + textBox2.Text + "";
+            OpWithDB.ExecuteCommand(commandText);
             GetList();
-        }
-
-        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            textBox2.Text = dataGridView1.CurrentRow.Cells[0].Value.ToString();
-            textBox3.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
-            textBox4.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
-        }
-
-        private void dataGridView1_Click(object sender, EventArgs e)
-        {
-
+            if (dataGridView1.CurrentRow != null)
+            {
+                textBox2.Text = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                textBox3.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                textBox4.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+            }
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -207,8 +125,6 @@ namespace Midis.EyeOfHorus.Client
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            //bool processExists = Process.GetProcesses().Any(p => p.ProcessName == processName);
-            //if (sc.Status == ServiceControllerStatus.Running)
             if (running)
             {
                 sc.Stop();
@@ -218,10 +134,9 @@ namespace Midis.EyeOfHorus.Client
                 MessageBox.Show("Serviss jau apstājas vai procesā", "Kļūdas paziņojums");
         }
 
-        private void button7_Click(object sender, EventArgs e)
+        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
-            //MessageBox.Show(Path.GetFullPath("ffmpeg/bin/ffmpeg.exe"));
-            MessageBox.Show(AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
+
         }
     }
 }
