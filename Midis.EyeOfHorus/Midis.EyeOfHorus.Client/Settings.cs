@@ -15,6 +15,7 @@ using System.ServiceProcess;
 using System.Linq;
 using System.IO;
 using Midis.EyeOfHorus.ClientLibrary.Database;
+using System.Net;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -137,6 +138,30 @@ namespace Midis.EyeOfHorus.Client
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/test.txt");
+            request.Method = WebRequestMethods.Ftp.DownloadFile;
+
+            //request.Credentials = new NetworkCredential("login", "password");
+            //request.EnableSsl = true; // если используется ssl
+
+            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+            Stream responseStream = response.GetResponseStream();
+            FileStream fs = new FileStream("newTest.txt", FileMode.Create);
+            byte[] buffer = new byte[64];
+            int size = 0;
+
+            while ((size = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                fs.Write(buffer, 0, size);
+
+            }
+            fs.Close();
+            response.Close();
         }
     }
 }
