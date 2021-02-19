@@ -142,26 +142,29 @@ namespace Midis.EyeOfHorus.Client
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/test.txt");
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-
-            //request.Credentials = new NetworkCredential("login", "password");
-            //request.EnableSsl = true; // если используется ssl
-
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-
-            Stream responseStream = response.GetResponseStream();
-            FileStream fs = new FileStream("newTest.txt", FileMode.Create);
-            byte[] buffer = new byte[64];
-            int size = 0;
-
-            while ((size = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+            string resultAbsolutePath = "C:/Windows/System32/ffmpeg/Results/";
+            DirectoryInfo resultDir = new DirectoryInfo(resultAbsolutePath);
+            foreach (FileInfo file in resultDir.GetFiles("*.png"))
             {
-                fs.Write(buffer, 0, size);
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + file.Name);
+                request.Method = WebRequestMethods.Ftp.UploadFile;
 
+                FileStream fs = new FileStream(file.FullName, FileMode.Open);
+
+                byte[] fileContents = new byte[fs.Length];
+                fs.Read(fileContents, 0, fileContents.Length);
+                fs.Close();
+                request.ContentLength = fileContents.Length;
+
+                Stream requestStream = request.GetRequestStream();
+                requestStream.Write(fileContents, 0, fileContents.Length);
+                requestStream.Close();
+
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                response.Close();
+                file.Delete();
             }
-            fs.Close();
-            response.Close();
         }
     }
 }
