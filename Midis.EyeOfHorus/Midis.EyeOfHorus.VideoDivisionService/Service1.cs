@@ -98,7 +98,30 @@ namespace VideoDivisionRestarter
                         string result = proc.StandardOutput.ReadToEnd();
 
                         //File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
-                        
+                        foreach (FileInfo image in resultDir.GetFiles("*.png"))
+                        {
+                            string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".png");
+                            request.Method = WebRequestMethods.Ftp.UploadFile;
+                            request.Credentials = new NetworkCredential("anonymous", " ");
+
+                            FileStream fs = new FileStream(image.FullName, FileMode.Open);
+
+                            byte[] fileContents = new byte[fs.Length];
+                            fs.Read(fileContents, 0, fileContents.Length);
+                            fs.Close();
+                            request.ContentLength = fileContents.Length;
+
+                            Stream requestStream = request.GetRequestStream();
+                            requestStream.Write(fileContents, 0, fileContents.Length);
+                            requestStream.Close();
+
+                            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                            response.Close();
+                            image.Delete();
+                        }
+
                     }
                 }
                 sWatch.Stop();
@@ -108,30 +131,9 @@ namespace VideoDivisionRestarter
                     Thread.Sleep((int)(timeToSleep));
                 }
 
-                string test1 = "C:/Windows/System32/ffmpeg/Results/";
-                DirectoryInfo test2 = new DirectoryInfo(test1);
-                foreach (FileInfo file in test2.GetFiles("*.png"))
-                {
-                    FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + file.Name);
-                    request.Method = WebRequestMethods.Ftp.UploadFile;
-                    request.Credentials = new NetworkCredential("anonymous", " ");
-
-                    FileStream fs = new FileStream(file.FullName, FileMode.Open);
-
-                    byte[] fileContents = new byte[fs.Length];
-                    fs.Read(fileContents, 0, fileContents.Length);
-                    fs.Close();
-                    request.ContentLength = fileContents.Length;
-
-                    Stream requestStream = request.GetRequestStream();
-                    requestStream.Write(fileContents, 0, fileContents.Length);
-                    requestStream.Close();
-
-                    FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-
-                    response.Close();
-                    file.Delete();
-                }
+                //string test1 = "C:/Windows/System32/ffmpeg/Results/";
+                //DirectoryInfo test2 = new DirectoryInfo(test1);
+              
             }
         }
     }
