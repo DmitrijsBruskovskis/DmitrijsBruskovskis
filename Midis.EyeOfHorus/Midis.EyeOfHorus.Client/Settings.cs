@@ -1,21 +1,11 @@
-﻿using Midis.EyeOfHorus.ClientLibrary;
+﻿using Midis.EyeOfHorus.ClientLibrary.Database;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.SQLite;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.ServiceProcess;
-using System.Linq;
 using System.IO;
-using Midis.EyeOfHorus.ClientLibrary.Database;
 using System.Net;
+using System.ServiceProcess;
+using System.Windows.Forms;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -138,33 +128,6 @@ namespace Midis.EyeOfHorus.Client
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string resultAbsolutePath = "C:/Windows/System32/ffmpeg/Results/";
-            DirectoryInfo resultDir = new DirectoryInfo(resultAbsolutePath);
-            foreach (FileInfo file in resultDir.GetFiles("*.png"))
-            {
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + file.Name);
-                request.Method = WebRequestMethods.Ftp.UploadFile;
-
-                FileStream fs = new FileStream(file.FullName, FileMode.Open);
-
-                byte[] fileContents = new byte[fs.Length];
-                fs.Read(fileContents, 0, fileContents.Length);
-                fs.Close();
-                request.ContentLength = fileContents.Length;
-
-                Stream requestStream = request.GetRequestStream();
-                requestStream.Write(fileContents, 0, fileContents.Length);
-                requestStream.Close();
-
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-
-                response.Close();
-                file.Delete();
-            }
         }
     }
 }

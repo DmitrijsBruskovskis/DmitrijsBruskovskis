@@ -13,11 +13,17 @@ using System.Threading.Tasks;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace VideoDivisionRestarter
 {
     public partial class Service1 : ServiceBase
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int Wow64DisableWow64FsRedirection(ref IntPtr ptr);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int Wow64EnableWow64FsRedirection(ref IntPtr ptr);
+
         Thread videoDivisionThread;
         bool enabled = true;
         public Service1()
@@ -66,8 +72,10 @@ namespace VideoDivisionRestarter
                 framesPerMinute = c.framesPerMinute;
             }
 
+            IntPtr val = IntPtr.Zero;
             while (enabled)
             {
+                Wow64DisableWow64FsRedirection(ref val);
                 Stopwatch sWatch = Stopwatch.StartNew();
                 foreach (var inputPath in inputPathList)
                 {
@@ -77,7 +85,10 @@ namespace VideoDivisionRestarter
                     foreach (FileInfo file in dir.GetFiles("*.mp4"))
                     {
                         if (!enabled)
+                        {
+                            Wow64EnableWow64FsRedirection(ref val);
                             break;
+                        }
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
                         string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultAbsolutePath + fileNameWithoutExtension + "_%03d.png";
                         //StreamWriter sw2 = new StreamWriter("C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/Test2.txt");
@@ -97,13 +108,15 @@ namespace VideoDivisionRestarter
 
                         string result = proc.StandardOutput.ReadToEnd();
 
-                        //File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
+                        File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
+
                         foreach (FileInfo image in resultDir.GetFiles("*.png"))
                         {
                             string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
                             FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".png");
+                            request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
-                            request.Credentials = new NetworkCredential("anonymous", " ");
+                            request.Credentials = new NetworkCredential("Midis0215", "Midis0215");
 
                             FileStream fs = new FileStream(image.FullName, FileMode.Open);
 
@@ -121,7 +134,7 @@ namespace VideoDivisionRestarter
                             response.Close();
                             image.Delete();
                         }
-
+                        Wow64EnableWow64FsRedirection(ref val);
                     }
                 }
                 sWatch.Stop();
@@ -130,10 +143,7 @@ namespace VideoDivisionRestarter
                     long timeToSleep = 60000 - sWatch.ElapsedMilliseconds;
                     Thread.Sleep((int)(timeToSleep));
                 }
-
-                //string test1 = "C:/Windows/System32/ffmpeg/Results/";
-                //DirectoryInfo test2 = new DirectoryInfo(test1);
-              
+                Wow64EnableWow64FsRedirection(ref val);
             }
         }
     }
