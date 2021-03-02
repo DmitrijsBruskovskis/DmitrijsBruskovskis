@@ -14,6 +14,7 @@ using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 
 namespace VideoDivisionRestarter
 {
@@ -26,6 +27,7 @@ namespace VideoDivisionRestarter
 
         Thread videoDivisionThread;
         bool enabled = true;
+        string clientID;
         public Service1()
         {
             InitializeComponent();
@@ -35,10 +37,20 @@ namespace VideoDivisionRestarter
         protected override void OnStart(string[] args)
         {
             VideoToFramesArg videoToFramesArg = new VideoToFramesArg();
+            clientID = args.ElementAt(args.Length-2);
             string framesPerMinuteString = args.Last();
             videoToFramesArg.framesPerMinute = Convert.ToDecimal(framesPerMinuteString);
             videoToFramesArg.inputPathList = args.ToList();
-            videoToFramesArg.inputPathList.RemoveAt(videoToFramesArg.inputPathList.Count-1);
+            videoToFramesArg.inputPathList.RemoveAt(videoToFramesArg.inputPathList.Count - 1);
+            videoToFramesArg.inputPathList.RemoveAt(videoToFramesArg.inputPathList.Count - 1);
+
+            //хочу перенести на кнопку и понять где выходит 0
+            int count = videoToFramesArg.inputPathList.Count;
+            for (int i = count / 2; i <= count - 1; i++)
+            {
+                videoToFramesArg.cameraIDList.Add(videoToFramesArg.inputPathList.ElementAt(i));
+                videoToFramesArg.inputPathList.RemoveAt(i);
+            }
             enabled = true;
 
             videoDivisionThread = new Thread(new ParameterizedThreadStart(VideoToFrames));
@@ -64,21 +76,25 @@ namespace VideoDivisionRestarter
             DirectoryInfo resultDir = new DirectoryInfo(resultAbsolutePath);
 
             List<string> inputPathList = null;
+            List<string> cameraIDList = null;
             decimal framesPerMinute = 0;
             for (int i = 1; i < 2; i++)
             {
                 VideoToFramesArg c = (VideoToFramesArg)obj;
                 inputPathList = c.inputPathList;
                 framesPerMinute = c.framesPerMinute;
+                cameraIDList = c.cameraIDList;
             }
 
             IntPtr val = IntPtr.Zero;
             while (enabled)
             {
+                int index = 0;
                 Wow64DisableWow64FsRedirection(ref val);
                 Stopwatch sWatch = Stopwatch.StartNew();
                 foreach (var inputPath in inputPathList)
                 {
+                    index++;
                     DirectoryInfo dir = new DirectoryInfo(inputPath);
                     decimal seconds = 60 / framesPerMinute;
 
@@ -108,17 +124,28 @@ namespace VideoDivisionRestarter
 
                         string result = proc.StandardOutput.ReadToEnd();
 
+                        XDocument xdoc = new XDocument();
+                        XElement infoAboutClient = new XElement("InfoAboutClient");
+                        XAttribute client = new XAttribute("ClientID", clientID);
+                        XAttribute cameraID = new XAttribute("CameraID", cameraIDList.ElementAt(index));
+                        infoAboutClient.Add(client);
+                        infoAboutClient.Add(cameraID);
+                        XElement information = new XElement("Information");
+                        information.Add(infoAboutClient);
+                        xdoc.Add(information);
+                        xdoc.Save(resultAbsolutePath + "InfoAboutClient.xml");
+
                         File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
 
-                        foreach (FileInfo image in resultDir.GetFiles("*.png"))
+                        foreach (FileInfo informationFile in resultDir.GetFiles("*.xml"))
                         {
-                            string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".png");
+                            string informationFileNameWithoutExtension = Path.GetFileNameWithoutExtension(informationFile.FullName);
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + informationFileNameWithoutExtension + ".xml");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
                             request.Credentials = new NetworkCredential("Midis0215", "Midis0215");
 
-                            FileStream fs = new FileStream(image.FullName, FileMode.Open);
+                            FileStream fs = new FileStream(informationFile.FullName, FileMode.Open);
 
                             byte[] fileContents = new byte[fs.Length];
                             fs.Read(fileContents, 0, fileContents.Length);
@@ -129,6 +156,31 @@ namespace VideoDivisionRestarter
                             requestStream.Write(fileContents, 0, fileContents.Length);
                             requestStream.Close();
 
+                            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                            response.Close();
+                            informationFile.Delete();
+                        }
+
+                        foreach (FileInfo image in resultDir.GetFiles("*.png"))
+                        {
+                            string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".png");
+                            request.UseBinary = true;
+                            request.Method = WebRequestMethods.Ftp.UploadFile;
+                            request.Credentials = new NetworkCredential("Midis0215", "Midis0215");
+
+                            FileStream fs = new FileStream(image.FullName, FileMode.Open);
+                            
+                            byte[] fileContents = new byte[fs.Length];
+                            fs.Read(fileContents, 0, fileContents.Length);
+                            fs.Close();
+                            request.ContentLength = fileContents.Length;
+
+                            Stream requestStream = request.GetRequestStream();
+                            requestStream.Write(fileContents, 0, fileContents.Length);
+                            requestStream.Close();
+                            
                             FtpWebResponse response = (FtpWebResponse)request.GetResponse();
 
                             response.Close();
@@ -150,6 +202,7 @@ namespace VideoDivisionRestarter
     public class VideoToFramesArg
     {
         public List<string> inputPathList;
+        public List<string> cameraIDList;
         public decimal framesPerMinute;
     }
 }

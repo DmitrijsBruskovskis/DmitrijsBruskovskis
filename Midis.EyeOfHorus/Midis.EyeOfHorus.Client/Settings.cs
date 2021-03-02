@@ -6,6 +6,8 @@ using System.IO;
 using System.Net;
 using System.ServiceProcess;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace Midis.EyeOfHorus.Client
 {
@@ -14,13 +16,6 @@ namespace Midis.EyeOfHorus.Client
         public Iestatijumi()
         {
             InitializeComponent();
-
-            //LoadData();
-            ////xml file
-            //var response = new SettingsSerializationHelper().ReadCD("po.xml");
-            //txtFrCount.Text = Convert.ToString(response.FrameCount);
-            //txtKey.Text = response.ClientKey;
-
         }
 
         DataSet ds;
@@ -42,12 +37,6 @@ namespace Midis.EyeOfHorus.Client
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            ////xml file
-            //new SettingsSerializationHelper().CreateCD("po.xml", new ClientData {
-            //    FrameCount = Convert.ToInt32(txtFrCount.Value),
-            //    ClientKey = txtKey.Text
-            //});
-
             ds = OpWithDB.GetDataSet();
 
             var InputPathList = new List<string>();
@@ -55,13 +44,18 @@ namespace Midis.EyeOfHorus.Client
             {
                 InputPathList.Add(row["OutputFolder"].ToString());
             }
+            foreach (DataRow row in ds.Tables["Cameras"].Rows)
+            {
+                InputPathList.Add(row["ID"].ToString());
+            }
+            InputPathList.Add(txtKey.Text);
             InputPathList.Add(txtFrCount.Value.ToString());
             string[] inputPathListArray = InputPathList.ToArray();
 
             if (running)
                 MessageBox.Show("Serviss vēl neapstājas, lūdzu, uzgaidiet", "Kļūdas paziņojums");
             else
-            if (InputPathList.Count != 0)
+            if (InputPathList.Count != 0 && txtKey.Text != "")
             {
                 running = true;
                 sc.Start(inputPathListArray);
