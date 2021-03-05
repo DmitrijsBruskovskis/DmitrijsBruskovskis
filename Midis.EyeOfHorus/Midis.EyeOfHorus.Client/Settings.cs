@@ -39,23 +39,23 @@ namespace Midis.EyeOfHorus.Client
         {
             ds = OpWithDB.GetDataSet();
 
-            var InputPathList = new List<string>();
+            var InputPathListAndCamerasIDs = new List<string>();
             foreach (DataRow row in ds.Tables["Cameras"].Rows)
             {
-                InputPathList.Add(row["OutputFolder"].ToString());
+                InputPathListAndCamerasIDs.Add(row["OutputFolder"].ToString());
             }
             foreach (DataRow row in ds.Tables["Cameras"].Rows)
             {
-                InputPathList.Add(row["ID"].ToString());
+                InputPathListAndCamerasIDs.Add(row["ID"].ToString());
             }
-            InputPathList.Add(txtKey.Text);
-            InputPathList.Add(txtFrCount.Value.ToString());
-            string[] inputPathListArray = InputPathList.ToArray();
+            InputPathListAndCamerasIDs.Add(txtKey.Text);
+            InputPathListAndCamerasIDs.Add(txtFrCount.Value.ToString());
+            string[] inputPathListArray = InputPathListAndCamerasIDs.ToArray();
 
             if (running)
                 MessageBox.Show("Serviss vēl neapstājas, lūdzu, uzgaidiet", "Kļūdas paziņojums");
             else
-            if (InputPathList.Count != 0 && txtKey.Text != "")
+            if (InputPathListAndCamerasIDs.Count != 0 && txtKey.Text != "")
             {
                 running = true;
                 sc.Start(inputPathListArray);
@@ -122,6 +122,20 @@ namespace Midis.EyeOfHorus.Client
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int[] test = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            int[] test2 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            int count = test.Length;
+            for (int i = count / 2; i <= count - 1; i++)
+            {
+                test2[i] = test[i];
+                test[i] = 0;
+            }
+            button1.Text = test2[0].ToString() + test2[1].ToString() + test2[2].ToString() + test2[3].ToString() + test2[4].ToString() + test2[5].ToString()
+                + test2[6].ToString() + test2[7].ToString() + test2[8].ToString() + test2[9].ToString();
         }
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace VideoDivisionRestarter
 {
@@ -27,7 +28,6 @@ namespace VideoDivisionRestarter
 
         Thread videoDivisionThread;
         bool enabled = true;
-        string clientID;
         public Service1()
         {
             InitializeComponent();
@@ -37,20 +37,12 @@ namespace VideoDivisionRestarter
         protected override void OnStart(string[] args)
         {
             VideoToFramesArg videoToFramesArg = new VideoToFramesArg();
-            clientID = args.ElementAt(args.Length-2);
-            string framesPerMinuteString = args.Last();
-            videoToFramesArg.framesPerMinute = Convert.ToDecimal(framesPerMinuteString);
-            videoToFramesArg.inputPathList = args.ToList();
-            videoToFramesArg.inputPathList.RemoveAt(videoToFramesArg.inputPathList.Count - 1);
-            videoToFramesArg.inputPathList.RemoveAt(videoToFramesArg.inputPathList.Count - 1);
+            videoToFramesArg.clientID = args.ElementAt(args.Length - 2);
+            videoToFramesArg.framesPerMinute = Convert.ToDecimal(args.Last());
+            videoToFramesArg.inputPathListAndCamerasIDs = args.ToList();
+            videoToFramesArg.inputPathListAndCamerasIDs.RemoveAt(videoToFramesArg.inputPathListAndCamerasIDs.Count - 1);
+            videoToFramesArg.inputPathListAndCamerasIDs.RemoveAt(videoToFramesArg.inputPathListAndCamerasIDs.Count - 1);
 
-            //хочу перенести на кнопку и понять где выходит 0
-            int count = videoToFramesArg.inputPathList.Count;
-            for (int i = count / 2; i <= count - 1; i++)
-            {
-                videoToFramesArg.cameraIDList.Add(videoToFramesArg.inputPathList.ElementAt(i));
-                videoToFramesArg.inputPathList.RemoveAt(i);
-            }
             enabled = true;
 
             videoDivisionThread = new Thread(new ParameterizedThreadStart(VideoToFrames));
@@ -75,16 +67,20 @@ namespace VideoDivisionRestarter
 
             DirectoryInfo resultDir = new DirectoryInfo(resultAbsolutePath);
 
-            List<string> inputPathList = null;
-            List<string> cameraIDList = null;
+            VideoToFramesArg info = (VideoToFramesArg)obj;
+
+            List<string> inputPathList = new List<string>();
+            List<string> cameraIDList = new List<string>();
             decimal framesPerMinute = 0;
-            for (int i = 1; i < 2; i++)
-            {
-                VideoToFramesArg c = (VideoToFramesArg)obj;
-                inputPathList = c.inputPathList;
-                framesPerMinute = c.framesPerMinute;
-                cameraIDList = c.cameraIDList;
-            }
+            string clientID = info.clientID;
+            framesPerMinute = info.framesPerMinute;
+
+            int count = info.inputPathListAndCamerasIDs.Count;
+            for (int i = count / 2; i < count; i++)
+                cameraIDList.Add(info.inputPathListAndCamerasIDs[i]);
+
+            for (int i = 0; i < count / 2; i++)
+                inputPathList.Add(info.inputPathListAndCamerasIDs[i]);
 
             IntPtr val = IntPtr.Zero;
             while (enabled)
@@ -94,7 +90,7 @@ namespace VideoDivisionRestarter
                 Stopwatch sWatch = Stopwatch.StartNew();
                 foreach (var inputPath in inputPathList)
                 {
-                    index++;
+                    Wow64DisableWow64FsRedirection(ref val);
                     DirectoryInfo dir = new DirectoryInfo(inputPath);
                     decimal seconds = 60 / framesPerMinute;
 
@@ -105,6 +101,7 @@ namespace VideoDivisionRestarter
                             Wow64EnableWow64FsRedirection(ref val);
                             break;
                         }
+                        Wow64DisableWow64FsRedirection(ref val);
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
                         string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultAbsolutePath + fileNameWithoutExtension + "_%03d.png";
                         //StreamWriter sw2 = new StreamWriter("C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/Test2.txt");
@@ -127,13 +124,13 @@ namespace VideoDivisionRestarter
                         XDocument xdoc = new XDocument();
                         XElement infoAboutClient = new XElement("InfoAboutClient");
                         XAttribute client = new XAttribute("ClientID", clientID);
-                        XAttribute cameraID = new XAttribute("CameraID", cameraIDList.ElementAt(index));
+                        XAttribute cameraID = new XAttribute("CameraID", cameraIDList[index]);
                         infoAboutClient.Add(client);
                         infoAboutClient.Add(cameraID);
                         XElement information = new XElement("Information");
                         information.Add(infoAboutClient);
                         xdoc.Add(information);
-                        xdoc.Save(resultAbsolutePath + "InfoAboutClient.xml");
+                        xdoc.Save(resultAbsolutePath + fileNameWithoutExtension + ".xml");
 
                         File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
 
@@ -188,6 +185,8 @@ namespace VideoDivisionRestarter
                         }
                         Wow64EnableWow64FsRedirection(ref val);
                     }
+                    index++;
+                    Wow64EnableWow64FsRedirection(ref val);
                 }
                 sWatch.Stop();
                 if (sWatch.ElapsedMilliseconds < 60000)
@@ -201,8 +200,8 @@ namespace VideoDivisionRestarter
     }
     public class VideoToFramesArg
     {
-        public List<string> inputPathList;
-        public List<string> cameraIDList;
+        public List<string> inputPathListAndCamerasIDs;
         public decimal framesPerMinute;
+        public string clientID;
     }
 }
