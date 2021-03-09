@@ -11,6 +11,8 @@ using Dlib = DlibDotNet.Dlib;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System.Linq;
+using System.Threading;
+using System.Xml;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
@@ -18,38 +20,43 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
     {
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string vocabularyPath)
         {
+            bool enabled = true;
             // set up Dlib facedetector
-            DirectoryInfo dir = new DirectoryInfo(inputFilePath);
-
-            using (var fd = Dlib.GetFrontalFaceDetector())
+            while(enabled)
             {
-                foreach (FileInfo files in dir.GetFiles("*.jpg"))
+                Thread.Sleep((int)(3000));
+                DirectoryInfo dir = new DirectoryInfo(inputFilePath);
+
+                using (var fd = Dlib.GetFrontalFaceDetector())
                 {
-                    string _inputFilePath = inputFilePath + files.Name;
-
-                    // load input image
-                    Array2D <RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
-
-                    // find all faces in the image
-                    Rectangle[] faces = fd.Operator(img);
-                    if (faces.Length != 0)
+                    foreach (FileInfo file in dir.GetFiles("*.png"))
                     {
-                        Console.WriteLine("Picture " + files.Name + " have faces, sending data to Azure");
-                        MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, files.Name, client, vocabularyPath).Wait();
-                    }
+                        Thread.Sleep((int)(2000));
+                        string _inputFilePath = inputFilePath + file.Name;
 
-                    foreach (var face in faces)
-                    {
-                        // draw a rectangle for each face
-                        Dlib.DrawRectangle(img, face, color: new RgbPixel(0, 255, 255), thickness: 4);
+                        // load input image
+                        Array2D<RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
+
+                        // find all faces in the image
+                        Rectangle[] faces = fd.Operator(img);
+                        if (faces.Length != 0)
+                        {
+                            Console.WriteLine("Picture " + file.Name + " have faces, sending data to Azure");
+                            MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, file.Name, client, vocabularyPath, inputFilePath).Wait();
+                        }
+                        Console.WriteLine();
+                        file.Delete();
+
+                        string xmlName = file.Name.Substring(0, file.Name.LastIndexOf('_')) + ".xml";
+                        if (dir.GetFiles(file.Name.Substring(0, file.Name.LastIndexOf('_')) + "*.png").Length <= 0)
+                            foreach (FileInfo xmlFile in dir.GetFiles(xmlName))
+                                xmlFile.Delete();
                     }
-                    // export the modified image
-                    Dlib.SaveJpeg(img, "./Results/" + files.Name);
                 }
             }
 
             // Gets the analysis of the specified image by using the Face REST API.
-            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string vocabularyPath)
+            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string vocabularyPath, string inputPathWithoutFileName)
             {
                 HttpClient client = new HttpClient();
 
@@ -67,7 +74,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                 HttpResponseMessage response;
 
-                // Request body. Posts a locally stored JPEG image.
+                // Request body. Posts a locally stored PNG image.
                 byte[] byteData = GetImageAsByteArray(inputFilePath);
 
                 using (ByteArrayContent content = new ByteArrayContent(byteData))
@@ -84,6 +91,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     // Get the JSON response.
                     string contentString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
+                    //понять в чем тут ошибка
                     // JSON response deserialization in list
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
@@ -93,10 +101,10 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     Dictionary<string, string[]> personDictionary =
                         new Dictionary<string, string[]>
                         {
-                            {"Obama", new[] { "1.jpg", "11.jpg" } },
-                            { "Toni", new[] { "2.jpg", "22.jpg" } },
-                            { "Merkel", new[] { "3.jpg", "33.jpg" } },
-                            { "Vladimir", new[] { "4.jpg", "44.jpg" } },
+                            {"Dzon Skotch", new[] { "Dzon_Skotch_1.png", "Dzon_Skotch_2.png" } },
+                            //{ "Toni", new[] { "2.jpg", "22.jpg" } },
+                            //{ "Merkel", new[] { "3.jpg", "33.jpg" } },
+                            //{ "Vladimir", new[] { "4.jpg", "44.jpg" } },
                         };
 
                     // Create a person group. 
@@ -165,7 +173,23 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                             }
                     }
 
-                    // Listing each element from JSON response and data transfer to the database.
+
+                    string xmlName = fileName.Substring(0, fileName.LastIndexOf('_')) + ".xml";
+                    XmlDocument xDoc = new XmlDocument();
+                    xDoc.Load(inputPathWithoutFileName + xmlName);
+                    XmlElement xRoot = xDoc.DocumentElement;
+                    string clientID = "";
+                    string cameraID = "";
+                    foreach (XmlNode xnode in xRoot)
+                    {
+                        XmlNode xmlClientID = xnode.Attributes.GetNamedItem("ClientID");
+                        XmlNode xmlCameraID = xnode.Attributes.GetNamedItem("CameraID");
+                        clientID = xmlClientID.Value.ToString();
+                        cameraID = xmlCameraID.Value.ToString();
+                    }
+
+
+                    // Listing each element from JSON response and transfer data to the database.
                     Console.WriteLine("\nWork with database:\n");
                     for (int i = 0; i < infoAboutImage.Count; i++)
                     {
@@ -173,8 +197,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         {
                             DatabaseInfoAboutFace databaseInfoAboutFace = new DatabaseInfoAboutFace
                             {
-                                ClientId = 1,
-                                CameraId = 1,
+                                ClientID = clientID,
+                                CameraID = Int32.Parse(cameraID),
                                 FileName = fileName,
                                 Worker = infoAboutImage[i].Worker,
                                 FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()         
