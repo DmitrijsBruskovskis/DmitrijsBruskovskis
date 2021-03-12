@@ -103,7 +103,7 @@ namespace VideoDivisionRestarter
                         }
                         Wow64DisableWow64FsRedirection(ref val);
                         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FullName);
-                        string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultAbsolutePath + fileNameWithoutExtension + "_%03d.png";
+                        string command = ffmpegAbsolutePath + " -i " + inputPath.Replace(@"\\", @"/") + "/" + file.Name + " -vf fps=1/" + seconds + " " + resultAbsolutePath + fileNameWithoutExtension + "_%03d.jpeg";
                         //StreamWriter sw2 = new StreamWriter("C:/Projects/Git/DmitrijsBruskovskis/Midis.EyeOfHorus/Midis.EyeOfHorus.VideoDivisionService/bin/Debug/Test2.txt");
                         //sw2.WriteLine(command);
                         //sw2.Close();
@@ -159,10 +159,10 @@ namespace VideoDivisionRestarter
                             informationFile.Delete();
                         }
 
-                        foreach (FileInfo image in resultDir.GetFiles("*.png"))
+                        foreach (FileInfo image in resultDir.GetFiles("*.jpeg"))
                         {
                             string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".png");
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".jpeg");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
                             request.Credentials = new NetworkCredential("Midis0215", "Midis0215");

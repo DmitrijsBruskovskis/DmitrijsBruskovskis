@@ -29,7 +29,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                 using (var fd = Dlib.GetFrontalFaceDetector())
                 {
-                    foreach (FileInfo file in dir.GetFiles("*.png"))
+                    foreach (FileInfo file in dir.GetFiles("*.jpeg"))
                     {
                         Thread.Sleep((int)(2000));
                         string _inputFilePath = inputFilePath + file.Name;
@@ -48,7 +48,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         file.Delete();
 
                         string xmlName = file.Name.Substring(0, file.Name.LastIndexOf('_')) + ".xml";
-                        if (dir.GetFiles(file.Name.Substring(0, file.Name.LastIndexOf('_')) + "*.png").Length <= 0)
+                        if (dir.GetFiles(file.Name.Substring(0, file.Name.LastIndexOf('_')) + "*.jpeg").Length <= 0)
                             foreach (FileInfo xmlFile in dir.GetFiles(xmlName))
                                 xmlFile.Delete();
                     }
@@ -74,7 +74,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                 HttpResponseMessage response;
 
-                // Request body. Posts a locally stored PNG image.
+                // Request body. Posts a locally stored JPEG image.
                 byte[] byteData = GetImageAsByteArray(inputFilePath);
 
                 using (ByteArrayContent content = new ByteArrayContent(byteData))
@@ -91,7 +91,10 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     // Get the JSON response.
                     string contentString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                    //понять в чем тут ошибка
+                    StreamWriter sw = new StreamWriter("C:/Test.txt");
+                    sw.WriteLine(contentString);
+                    sw.Close();
+
                     // JSON response deserialization in list
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
@@ -101,8 +104,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     Dictionary<string, string[]> personDictionary =
                         new Dictionary<string, string[]>
                         {
-                            {"Dzon Skotch", new[] { "Dzon_Skotch_1.png", "Dzon_Skotch_2.png" } },
-                            //{ "Toni", new[] { "2.jpg", "22.jpg" } },
+                            {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
+                            { "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
                             //{ "Merkel", new[] { "3.jpg", "33.jpg" } },
                             //{ "Vladimir", new[] { "4.jpg", "44.jpg" } },
                         };
@@ -153,26 +156,22 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                     var identifyResults = await faceClient.Face.IdentifyAsync(sourceFaceIds, personGroupId, null, 1, 0.0000001);
 
-                    //Person identification
-                    foreach (var identifyResult in identifyResults)
-                    {
-                        if (identifyResult.Candidates[0].Confidence > 0.5)
+                    for(int i = 0; i < identifyResults.Count; i++ )
+                    {       
+                        for(int j = 0; j < identifyResults[i].Candidates.Count; j++)
                         {
-                            Person person = await faceClient.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
-                            foreach (var detectedFace in infoAboutImage)
+                            if (identifyResults[i].Candidates[j].Confidence > 0.51)
                             {
-                                detectedFace.Worker = person.Name; ;
+                                Person person = await faceClient.PersonGroupPerson.GetAsync(personGroupId, identifyResults[i].Candidates[j].PersonId);
+                                infoAboutImage[i].Worker = person.Name;
+                                Console.WriteLine($"Person '{person.Name}' is identified for face in: {fileName} - {identifyResults[i].FaceId}," +
+                                    $" confidence: {identifyResults[i].Candidates[j].Confidence}.");
+                                break;
                             }
-                            Console.WriteLine($"Person '{person.Name}' is identified for face in: {fileName} - {identifyResult.FaceId}," +
-                                $" confidence: {identifyResult.Candidates[0].Confidence}.");
+                            else
+                                infoAboutImage[i].Worker = "Unidentified person";
                         }
-                        else
-                            foreach (var detectedFace in infoAboutImage)
-                            {
-                                detectedFace.Worker = "Unidentified person";
-                            }
                     }
-
 
                     string xmlName = fileName.Substring(0, fileName.LastIndexOf('_')) + ".xml";
                     XmlDocument xDoc = new XmlDocument();
@@ -187,7 +186,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         clientID = xmlClientID.Value.ToString();
                         cameraID = xmlCameraID.Value.ToString();
                     }
-
 
                     // Listing each element from JSON response and transfer data to the database.
                     Console.WriteLine("\nWork with database:\n");
