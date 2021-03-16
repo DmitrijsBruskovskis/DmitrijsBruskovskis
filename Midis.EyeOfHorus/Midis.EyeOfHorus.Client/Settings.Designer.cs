@@ -46,7 +46,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.txtFrCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -54,7 +53,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(26, 195);
+            this.label2.Location = new System.Drawing.Point(29, 271);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(115, 15);
             this.label2.TabIndex = 2;
@@ -63,7 +62,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 227);
+            this.label3.Location = new System.Drawing.Point(29, 305);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 15);
             this.label3.TabIndex = 3;
@@ -71,7 +70,7 @@
             // 
             // txtFrCount
             // 
-            this.txtFrCount.Location = new System.Drawing.Point(148, 195);
+            this.txtFrCount.Location = new System.Drawing.Point(146, 271);
             this.txtFrCount.Maximum = new decimal(new int[] {
             60,
             0,
@@ -97,18 +96,18 @@
             // 
             // txtKey
             // 
-            this.txtKey.Location = new System.Drawing.Point(148, 227);
+            this.txtKey.Location = new System.Drawing.Point(146, 305);
             this.txtKey.Name = "txtKey";
-            this.txtKey.Size = new System.Drawing.Size(100, 23);
+            this.txtKey.Size = new System.Drawing.Size(165, 23);
             this.txtKey.TabIndex = 6;
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(604, 219);
+            this.btnConfirm.Location = new System.Drawing.Point(738, 305);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(133, 23);
             this.btnConfirm.TabIndex = 8;
-            this.btnConfirm.Text = "Sākt darbu";
+            this.btnConfirm.Text = "Sākt servisa darbu";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
@@ -125,13 +124,13 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(30, 41);
+            this.dataGridView1.Location = new System.Drawing.Point(28, 41);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.Size = new System.Drawing.Size(707, 106);
+            this.dataGridView1.Size = new System.Drawing.Size(842, 174);
             this.dataGridView1.TabIndex = 10;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
@@ -158,29 +157,29 @@
             // textBox2
             // 
             this.textBox2.Enabled = false;
-            this.textBox2.Location = new System.Drawing.Point(55, 153);
+            this.textBox2.Location = new System.Drawing.Point(54, 221);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(34, 23);
             this.textBox2.TabIndex = 13;
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(147, 153);
+            this.textBox3.Location = new System.Drawing.Point(146, 221);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(84, 23);
             this.textBox3.TabIndex = 14;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(433, 153);
+            this.textBox4.Location = new System.Drawing.Point(328, 221);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(304, 23);
+            this.textBox4.Size = new System.Drawing.Size(451, 23);
             this.textBox4.TabIndex = 15;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(30, 156);
+            this.label4.Location = new System.Drawing.Point(29, 224);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(21, 15);
             this.label4.TabIndex = 16;
@@ -189,7 +188,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(99, 156);
+            this.label5.Location = new System.Drawing.Point(98, 224);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(44, 15);
             this.label5.TabIndex = 17;
@@ -198,7 +197,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(237, 156);
+            this.label6.Location = new System.Drawing.Point(236, 224);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(84, 15);
             this.label6.TabIndex = 17;
@@ -206,40 +205,29 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(327, 153);
+            this.button6.Location = new System.Drawing.Point(785, 221);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(100, 23);
+            this.button6.Size = new System.Drawing.Size(86, 23);
             this.button6.TabIndex = 18;
-            this.button6.Text = "Norādiet mapi";
+            this.button6.Text = "Norādit mapi";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(465, 219);
+            this.button2.Location = new System.Drawing.Point(599, 305);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(133, 23);
             this.button2.TabIndex = 19;
-            this.button2.Text = "Pabeigt darbu";
+            this.button2.Text = "Pabeigt servisa darbu";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(343, 219);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Iestatijumi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(770, 272);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(894, 344);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.label6);
@@ -288,6 +276,5 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
     }
 }

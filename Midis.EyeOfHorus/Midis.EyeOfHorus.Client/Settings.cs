@@ -87,6 +87,8 @@ namespace Midis.EyeOfHorus.Client
         {
             string commandText = "delete from Cameras where ID=" + textBox2.Text + "";
             OpWithDB.ExecuteCommand(commandText);
+            commandText = "update sqlite_sequence set seq = 0 WHERE `name` = 'Cameras'";
+            OpWithDB.ExecuteCommand(commandText);
             GetList();
         }
 
@@ -122,20 +124,6 @@ namespace Midis.EyeOfHorus.Client
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
         {
 
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int[] test = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            int[] test2 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            int count = test.Length;
-            for (int i = count / 2; i <= count - 1; i++)
-            {
-                test2[i] = test[i];
-                test[i] = 0;
-            }
-            button1.Text = test2[0].ToString() + test2[1].ToString() + test2[2].ToString() + test2[3].ToString() + test2[4].ToString() + test2[5].ToString()
-                + test2[6].ToString() + test2[7].ToString() + test2[8].ToString() + test2[9].ToString();
         }
     }
 }
