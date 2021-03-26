@@ -1,0 +1,8 @@
+1) Перекинуть папку ffmpeg в system32
+2) Установить VideoDivisionService
+{
+cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
+InstallUtil.exe C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.VideoDivisionService\bin\Debug\VideoDivisionService.exe
+}
+3)Если не отключить в сервисе попытку пересылки файлов на сервер, то будет ошибка, так как сервер пока что только локальный
+4)Возможно еще что-то, пока в процессе проверки
