@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.ClientLibr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midis.EyeOfHorus.VideoDivisionService", "Midis.EyeOfHorus.VideoDivisionService\Midis.EyeOfHorus.VideoDivisionService.csproj", "{80068AD3-7516-464F-A53B-D3748FB97EC2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.WebApp", "Midis.EyeOfHorus.WebApp\WebApp\Midis.EyeOfHorus.WebApp.csproj", "{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{80068AD3-7516-464F-A53B-D3748FB97EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80068AD3-7516-464F-A53B-D3748FB97EC2}.Release|x64.ActiveCfg = Release|Any CPU
 		{80068AD3-7516-464F-A53B-D3748FB97EC2}.Release|x64.Build.0 = Release|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Debug|x64.Build.0 = Debug|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Release|x64.ActiveCfg = Release|Any CPU
+		{5ECF8A32-94D6-44C7-9806-46F8C3B7EDB3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
