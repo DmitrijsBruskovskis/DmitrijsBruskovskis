@@ -134,6 +134,7 @@ namespace VideoDivisionRestarter
 
                         File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
 
+                        //Comment from here to prevent errors while testing not on the work PC
                         foreach (FileInfo informationFile in resultDir.GetFiles("*.xml"))
                         {
                             string informationFileNameWithoutExtension = Path.GetFileNameWithoutExtension(informationFile.FullName);
@@ -183,6 +184,7 @@ namespace VideoDivisionRestarter
                             response.Close();
                             image.Delete();
                         }
+                        //Comment until here to prevent errors while testing not on the work PC
                         Wow64EnableWow64FsRedirection(ref val);
                     }
                     index++;

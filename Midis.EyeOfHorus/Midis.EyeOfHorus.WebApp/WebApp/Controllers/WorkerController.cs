@@ -9,18 +9,8 @@ namespace WebApp.Controllers
 {
     public class WorkerController : Controller
     {
-        private readonly INewWorker worker;
-
-
-        public WorkerController(INewWorker workerNew)
+        public IActionResult Index()
         {
-            worker = workerNew;
-        }
-
-        public ViewResult Add(string category)
-        {
-            category = "";
-            var results = worker.AllWorkers; //mocka net, potom s db vzjatj
             return View();
         }
     }

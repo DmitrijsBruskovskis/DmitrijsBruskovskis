@@ -9,19 +9,8 @@ namespace WebApp.Controllers
 {
     public class ResultsController : Controller
     {
-        private readonly IResults contrResults;
-        private readonly IClient contrClient;
-
-
-        public ResultsController(IResults resultcontr)
+        public IActionResult Index()
         {
-            contrResults = resultcontr;
-        }
-        
-        public ViewResult List(string category)
-        {
-            category = "";
-           var results = contrResults.AllResults; //mocka net, potom s db vzjatj
             return View();
         }
     }
