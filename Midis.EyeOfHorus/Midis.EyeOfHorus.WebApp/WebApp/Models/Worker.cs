@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace WebApp.Models
 {
-    public class NewWorker
+    public class Worker
     {
-        public Guid id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public Guid Id { get; set; }
+        public string FullName { get; set; }
         public string[] Image { get; set; }
     }
 }

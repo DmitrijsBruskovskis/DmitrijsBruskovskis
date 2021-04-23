@@ -13,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Data;
 using WebApp.Data.Interfaces;
-using WebApp.Data.Mocks;
 
 namespace WebApp
 {
@@ -37,9 +36,6 @@ namespace WebApp
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
-
-           services.AddTransient<IResults, MockResults>();
-           services.AddTransient<INewWorker, MockWorker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -6,8 +6,8 @@ using WebApp.Models;
 
 namespace WebApp.Data.Interfaces
 {
-    public interface INewWorker
+    public interface IWorker
     {
-        IEnumerable<NewWorker> AllWorkers { get; }
+        IEnumerable<Worker> AllWorkers { get; }
     }
 }

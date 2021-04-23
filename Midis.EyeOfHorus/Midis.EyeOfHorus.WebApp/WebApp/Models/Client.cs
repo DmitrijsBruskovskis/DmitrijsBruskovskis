@@ -7,7 +7,7 @@ namespace WebApp.Models
 {
     public class Client
     {
-        public Guid id { get; set; }
+        public Guid Id { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
         public string CompanyName { get; set; }
