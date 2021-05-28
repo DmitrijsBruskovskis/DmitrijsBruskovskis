@@ -102,8 +102,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         {
                             {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
                             { "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
-                            //{ "Merkel", new[] { "3.jpg", "33.jpg" } },
-                            //{ "Vladimir", new[] { "4.jpg", "44.jpg" } },
+                            //{ "Test1", new[] { "1.jpg", "2.jpg" } },
+                            //{ "Test2", new[] { "3.jpg", "4.jpg" } },
                         };
 
                     // Create a person group. 
