@@ -7,7 +7,7 @@ namespace WebApp.Models
 {
     public class Results
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string FullName { get; set; }
         public string FaceRectangle { get; set; }
         public string ClientID { get; set; }
