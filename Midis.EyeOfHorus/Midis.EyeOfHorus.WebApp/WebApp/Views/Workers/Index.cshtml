@@ -1,0 +1,36 @@
+﻿@model IEnumerable<WebApp.Models.Workers>
+@{ ViewData["Title"] = "Workers"; }
+
+<div id="createModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            @{ Html.RenderPartialAsync("Create", WebApp.Models.Workers) }
+        </div>
+    </div>
+</div>
+<button type="button" class="btn btn-primary right" style="margin-bottom:15px" data-toggle="modal" data-target="#createModal">Add worker</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">FullName</th>
+            <th scope="col">Image</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var worker in Model)
+        {
+            <tr>
+                <td>@worker.Id</td>
+                <td>@worker.FullName</td>
+                <td>@worker.ImageName</td>
+                <td class="for-buttons">
+                    <button type="button" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal"><i class="far fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-intable"><i class="far fa-trash-alt"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

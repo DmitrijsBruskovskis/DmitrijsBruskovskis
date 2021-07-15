@@ -13,7 +13,7 @@ namespace WebApp.Data
             : base(options)
         { }
         public DbSet<Results> Results { get; set; }
-        public DbSet<Worker> Workers { get; set; }
+        public DbSet<Workers> Workers { get; set; }
 
     }
 }

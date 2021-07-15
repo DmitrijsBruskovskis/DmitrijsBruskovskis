@@ -3,14 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using WebApp.Data;
 
 namespace WebApp.Controllers
 {
     public class ResultsController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext db;
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(await db.Results.ToListAsync());
+        }
+
+        public ResultsController(ApplicationDbContext context)
+        {
+            db = context;
         }
     }
 }

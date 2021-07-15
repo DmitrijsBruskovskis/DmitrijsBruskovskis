@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApp.Models
 {
-    public class Worker
+    public class Workers
     {
         public int Id { get; set; }
         public string FullName { get; set; }
