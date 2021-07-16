@@ -35,9 +35,35 @@ namespace WebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+            if (id != null)
+            {
+                Workers worker = await db.Workers.FirstOrDefaultAsync(p => p.Id == id);
+                if (worker != null)
+                    return View(worker);
+            }
+            return NotFound();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(Workers worker)
+        {
+            db.Workers.Update(worker);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id != null)
+            {
+                Workers worker = new Workers { Id = id.Value };
+                db.Entry(worker).State = EntityState.Deleted;
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return NotFound();
         }
     }
 }

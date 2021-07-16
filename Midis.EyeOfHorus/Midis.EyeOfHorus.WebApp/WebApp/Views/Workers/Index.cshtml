@@ -1,13 +1,24 @@
 ﻿@model IEnumerable<WebApp.Models.Workers>
 @{ ViewData["Title"] = "Workers"; }
 
+@*Create modal*@
 <div id="createModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            @{ Html.RenderPartialAsync("Create", WebApp.Models.Workers) }
+            @{ await Html.RenderPartialAsync("Create", new WebApp.Models.Workers()); }
         </div>
     </div>
 </div>
+
+@*Edit modal*@
+<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            @{ await Html.RenderPartialAsync("Edit", new WebApp.Models.Workers() {Id = 1 }); }
+        </div>
+    </div>
+</div>
+
 <button type="button" class="btn btn-primary right" style="margin-bottom:15px" data-toggle="modal" data-target="#createModal">Add worker</button>
 
 <table class="table">
@@ -27,10 +38,10 @@
                 <td>@worker.FullName</td>
                 <td>@worker.ImageName</td>
                 <td class="for-buttons">
-                    <button type="button" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal"><i class="far fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-intable"><i class="far fa-trash-alt"></i></button>
+                    <button type="button" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal" data-id="@worker.Id"><i class="far fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-intable" asp-action="Delete" asp-controller="Workers" asp-route-id="@worker.Id"><i class="far fa-trash-alt"></i></button>
                 </td>
             </tr>
-        }
+         }
     </tbody>
 </table>
