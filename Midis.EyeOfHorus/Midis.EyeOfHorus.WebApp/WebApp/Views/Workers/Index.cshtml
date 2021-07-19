@@ -2,7 +2,7 @@
 @{ ViewData["Title"] = "Workers"; }
 
 @*Create modal*@
-<div id="createModal" class="modal fade" tabindex="-1" role="dialog">
+<div id="createModal" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             @{ await Html.RenderPartialAsync("Create", new WebApp.Models.Workers()); }
@@ -11,10 +11,19 @@
 </div>
 
 @*Edit modal*@
-<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+<div id="editModal" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            @{ await Html.RenderPartialAsync("Edit", new WebApp.Models.Workers() {Id = 1 }); }
+        <div class="modal-content" id="EditModalBodyDiv">
+            @{ await Html.RenderPartialAsync("Edit", new WebApp.Models.Workers()); }
+        </div>
+    </div>
+</div>
+
+@*Delete modal*@
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="DeleteModalBodyDiv">
+            @{ await Html.RenderPartialAsync("Delete", new WebApp.Models.Workers()); }
         </div>
     </div>
 </div>
@@ -38,10 +47,25 @@
                 <td>@worker.FullName</td>
                 <td>@worker.ImageName</td>
                 <td class="for-buttons">
-                    <button type="button" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal" data-id="@worker.Id"><i class="far fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-intable" asp-action="Delete" asp-controller="Workers" asp-route-id="@worker.Id"><i class="far fa-trash-alt"></i></button>
+                    <button type="button" onclick="Edit(@worker.Id)" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal"><i class="far fa-edit"></i></button>
+                    <button type="button" onclick="Delete(@worker.Id)" class="btn btn-danger btn-intable"  data-toggle="modal" data-target="#deleteModal"><i class="far fa-trash-alt"></i></button>
                 </td>
             </tr>
-         }
+        }
     </tbody>
 </table>
+
+<script type="text/javascript">
+    function Edit(Id) {
+        var url = "/Workers/Edit?Id=" + Id;
+        $("#EditModalBodyDiv").load(url, function () {
+            $("#editModal").modal("show");
+        })
+    }
+    function Delete(Id) {
+        var url = "/Workers/Delete?Id=" + Id;
+        $("#DeleteModalBodyDiv").load(url, function () {
+            $("#deleteModal").modal("show");
+        })
+    }
+</script>
