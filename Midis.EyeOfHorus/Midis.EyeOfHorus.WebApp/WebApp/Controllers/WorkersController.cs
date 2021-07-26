@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Midis.EyeOfHorus.WebApp.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Data;
@@ -28,8 +31,18 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Workers worker)
+        public async Task<IActionResult> Create(WorkersViewModel wvm)
         {
+            Workers worker = new Workers { FullName = wvm.FullName, ImageName = wvm.ImageName };
+            if (wvm.Avatar != null)
+            {
+                byte[] imageData = null;
+                using (var binaryReader = new BinaryReader(wvm.Avatar.OpenReadStream()))
+                {
+                    imageData = binaryReader.ReadBytes((int)wvm.Avatar.Length);
+                }
+                worker.Avatar = imageData;
+            }
             db.Workers.Add(worker);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
@@ -45,9 +58,20 @@ namespace WebApp.Controllers
             }
             return NotFound();
         }
+
         [HttpPost]
-        public async Task<IActionResult> Edit(Workers worker)
+        public async Task<IActionResult> Edit(WorkersViewModel wvm)
         {
+            Workers worker = await db.Workers.FirstOrDefaultAsync(p => p.Id == wvm.Id);
+            if (wvm.Avatar != null)
+            {
+                byte[] imageData = null;
+                using (var binaryReader = new BinaryReader(wvm.Avatar.OpenReadStream()))
+                {
+                    imageData = binaryReader.ReadBytes((int)wvm.Avatar.Length);
+                }
+                worker.Avatar = imageData;
+            }
             db.Workers.Update(worker);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");

@@ -1,5 +1,5 @@
 ﻿@model WebApp.Models.Workers
-<form asp-controller="workers" asp-action="create">
+<form asp-controller="workers" asp-action="create" method="post" enctype="multipart/form-data">
     <div class="modal-header">     
         <h4 class="modal-title">Worker creation</h4>
     </div>
@@ -10,8 +10,11 @@
             <input type="text" asp-for="FullName" class="form-control" />
         </div>
         <div class="form-group">
-            <label asp-for="ImageName" class="control-label">Image</label>
-            <input type="text" asp-for="ImageName" class="form-control" />
+            <label asp-for="ImageName" class="control-label">Image Name</label>
+            <input type="text" asp-for="ImageName" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <input type="file" asp-for="Avatar" class="form-control" />
         </div>
     </div>
 
