@@ -1,0 +1,21 @@
+﻿@model WebApp.Models.Workers
+@{ Layout = null;}
+
+<form asp-controller="workers" asp-action="details" asp-route-id="@Model.Id" enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title">Details about @Model.FullName</h4>
+    </div>
+
+    <div>
+        <div style="vertical-align: middle; text-align: center; margin-bottom: 25px; margin-top: 25px; ">
+            @if (Model.Avatar != null)
+            {
+                <img style='width:300px; height:300px;' src="data:image/jpeg;base64,@(Convert.ToBase64String(@Model.Avatar))"/>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>

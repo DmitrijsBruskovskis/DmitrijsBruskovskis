@@ -33,7 +33,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(WorkersViewModel wvm)
         {
-            Workers worker = new Workers { FullName = wvm.FullName, ImageName = wvm.ImageName };
+            Workers worker = new Workers { FullName = wvm.FullName, ImageName = wvm.Avatar.FileName };
             if (wvm.Avatar != null)
             {
                 byte[] imageData = null;
@@ -63,6 +63,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(WorkersViewModel wvm)
         {
             Workers worker = await db.Workers.FirstOrDefaultAsync(p => p.Id == wvm.Id);
+            worker.FullName = wvm.FullName;        
             if (wvm.Avatar != null)
             {
                 byte[] imageData = null;
@@ -71,6 +72,7 @@ namespace WebApp.Controllers
                     imageData = binaryReader.ReadBytes((int)wvm.Avatar.Length);
                 }
                 worker.Avatar = imageData;
+                worker.ImageName = wvm.Avatar.FileName;
             }
             db.Workers.Update(worker);
             await db.SaveChangesAsync();
@@ -102,6 +104,17 @@ namespace WebApp.Controllers
                     await db.SaveChangesAsync();
                     return RedirectToAction("Index");
                 }
+            }
+            return NotFound();
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id != null)
+            {
+                Workers worker = await db.Workers.FirstOrDefaultAsync(p => p.Id == id);
+                if (worker != null)
+                    return View(worker);
             }
             return NotFound();
         }
