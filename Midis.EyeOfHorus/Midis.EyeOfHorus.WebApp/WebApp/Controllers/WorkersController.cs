@@ -9,15 +9,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Data;
 using WebApp.Models;
+using AutoMapper;
 
 namespace WebApp.Controllers
 {
     public class WorkersController : Controller
     {
         private readonly ApplicationDbContext db;
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await db.Workers.ToListAsync());
+            int pageSize = 10;
+
+            IQueryable<Workers> source = db.Workers;
+            var count = await source.CountAsync();
+            var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+
+            var newlist = new WorkersViewModel();
+
+            WorkersIndexViewModel viewModel = new WorkersIndexViewModel
+            {
+                PageViewModel = pageViewModel,
+                Workers = items
+            };
+            return View(viewModel);
         }
 
         public WorkersController(ApplicationDbContext context)
