@@ -7,7 +7,7 @@ namespace Midis.EyeOfHorus.WebApp.Models
 {
     public class PageViewModel
     {
-        public int PageNumber { get; private set; }
+        public int PageNumber { get;  set; }
         public int TotalPages { get; private set; }
 
         public PageViewModel(int count, int pageNumber, int pageSize)

@@ -1,7 +1,25 @@
-﻿@model Midis.EyeOfHorus.WebApp.Models.WorkersIndexViewModel
+﻿@using Midis.EyeOfHorus.WebApp.Models;
+@model Midis.EyeOfHorus.WebApp.Models.WorkersIndexViewModel
+@addTagHelper *, Midis.EyeOfHorus.WebApp
 @{ ViewData["Title"] = "Workers"; }
 
-<button type="button" class="btn btn-primary right" style="margin-bottom:15px" data-toggle="modal" data-target="#createModal">Add worker</button>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form method="get">
+                <div class="form-inline form-group">
+                    <label class="control-label" style="padding-right:10px">Full Name: </label>
+                    <input name="filteredName" class="form-control" />
+
+                    <input type="submit" value="Filter" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary right" style="margin-bottom:15px" data-toggle="modal" data-target="#createModal">Add worker</button>
+        </div>
+    </div>
+</div>
 
 <table class="table">
     <thead>
@@ -29,22 +47,7 @@
     </tbody>
 </table>
 
-@if (Model.PageViewModel.HasPreviousPage)
-{
-    <a asp-action="Index"
-       asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
-       class="btn btn-outline-dark">
-        Previous
-    </a>
-}
-@if (Model.PageViewModel.HasNextPage)
-{
-    <a asp-action="Index"
-       asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
-       class="btn btn-outline-dark">
-        Next
-    </a>
-} 
+<page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
 
 @*Create modal*@
 <div id="createModal" class="modal fade" role="dialog">
@@ -83,7 +86,6 @@
 </div>
 
 <script type="text/javascript">
-
     $(document).ready(function (e) {
         $(".partialContents").each(function (index, item) {
             var url = $(item).data("url");
@@ -92,7 +94,6 @@
             }
         });
     });
-
     function Edit(Id) {
         var url = "/Workers/Edit?Id=" + Id;
         $("#EditModalBodyDiv").load(url, function () {

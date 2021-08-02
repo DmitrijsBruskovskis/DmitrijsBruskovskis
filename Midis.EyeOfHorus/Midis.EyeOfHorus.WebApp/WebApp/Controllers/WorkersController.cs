@@ -16,11 +16,16 @@ namespace WebApp.Controllers
     public class WorkersController : Controller
     {
         private readonly ApplicationDbContext db;
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, string filteredName = null)
         {
             int pageSize = 10;
 
             IQueryable<Workers> source = db.Workers;
+            if (!String.IsNullOrEmpty(filteredName))
+            {
+                source = source.Where(p => p.FullName.Contains(filteredName));
+            }
+
             var count = await source.CountAsync();
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
@@ -58,13 +63,23 @@ namespace WebApp.Controllers
                 }
                 worker.Avatar = imageData;
             }
-            db.Workers.Add(worker);
-            await db.SaveChangesAsync();
+            List<Workers> workers = db.Workers.Where(x => x.FullName == worker.FullName).ToList();
+            if (workers.Count > 0)
+            {
+                ViewBag.Duplicate = "Worker " + worker.FullName + " already exist.";
+            }
+            else
+            {
+                db.Workers.Add(worker);
+                await db.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
+            
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
+            TempData["returnurl"] = Request.Headers["Referer"].ToString();
             if (id != null)
             {
                 Workers worker = await db.Workers.FirstOrDefaultAsync(p => p.Id == id);
@@ -91,7 +106,7 @@ namespace WebApp.Controllers
             }
             db.Workers.Update(worker);
             await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+             return Redirect(TempData["returnurl"].ToString());
         }
 
         [HttpGet]

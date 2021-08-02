@@ -10,5 +10,6 @@ namespace Midis.EyeOfHorus.WebApp.Models
     {
         public IEnumerable<Workers> Workers { get; set; }
         public PageViewModel PageViewModel { get; set; }
+        public string FilteredName { get; set; }
     }
 }
