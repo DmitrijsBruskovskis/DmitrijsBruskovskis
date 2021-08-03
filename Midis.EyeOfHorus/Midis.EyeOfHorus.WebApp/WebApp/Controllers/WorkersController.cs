@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using WebApp.Data;
 using WebApp.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
@@ -63,18 +64,9 @@ namespace WebApp.Controllers
                 }
                 worker.Avatar = imageData;
             }
-            List<Workers> workers = db.Workers.Where(x => x.FullName == worker.FullName).ToList();
-            if (workers.Count > 0)
-            {
-                ViewBag.Duplicate = "Worker " + worker.FullName + " already exist.";
-            }
-            else
-            {
-                db.Workers.Add(worker);
-                await db.SaveChangesAsync();
-            }
+            db.Workers.Add(worker);
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
-            
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -106,7 +98,7 @@ namespace WebApp.Controllers
             }
             db.Workers.Update(worker);
             await db.SaveChangesAsync();
-             return Redirect(TempData["returnurl"].ToString());
+            return Redirect(TempData["returnurl"].ToString());
         }
 
         [HttpGet]
@@ -147,6 +139,19 @@ namespace WebApp.Controllers
                     return View(worker);
             }
             return NotFound();
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        public IActionResult DoesWorkerExist(string fullName, string previousFullName)
+        {
+            if (fullName == previousFullName)
+            {
+                return Json(true);
+            }
+            List<Workers> workers = db.Workers.Where(x => x.FullName == fullName).ToList();
+            if (workers.Count > 0)
+                return Json(false);
+            return Json(true);
         }
     }
 }
