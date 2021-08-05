@@ -31,8 +31,6 @@ namespace WebApp.Controllers
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
 
-            var newlist = new WorkersViewModel();
-
             WorkersIndexViewModel viewModel = new WorkersIndexViewModel
             {
                 PageViewModel = pageViewModel,

@@ -7,10 +7,10 @@ using Midis.EyeOfHorus.WebApp.Models;
 
 namespace Midis.EyeOfHorus.WebApp.TagHelpers
 {
-    public class PageLinkTagHelper : TagHelper
+    public class PageLinkLongListTagHelper : TagHelper
     {
         private IUrlHelperFactory urlHelperFactory;
-        public PageLinkTagHelper(IUrlHelperFactory helperFactory)
+        public PageLinkLongListTagHelper(IUrlHelperFactory helperFactory)
         {
             urlHelperFactory = helperFactory;
         }
