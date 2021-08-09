@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Midis.EyeOfHorus.WebApp.Models;
+using System.Collections.Generic;
 
 namespace Midis.EyeOfHorus.WebApp.TagHelpers
 {
@@ -20,6 +21,8 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
         public PageViewModel PageModel { get; set; }
         public string PageAction { get; set; }
 
+        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+        public Dictionary<string, object> PageUrlValues { get; set; } = new Dictionary<string, object>();
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
@@ -28,23 +31,6 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
             // reference set will represent ul list
             TagBuilder tag = new TagBuilder("ul");
             tag.AddCssClass("pagination");
-
-            // creating three references - to the current, previous and next page
-            //TagBuilder currentItem = CreateTag(PageModel.PageNumber, urlHelper);
-
-            // create a link to the previous page, if exist
-            //if (PageModel.HasPreviousPage)
-            //{
-            //    TagBuilder prevItem = CreateTag(PageModel.PageNumber - 1, urlHelper);
-            //    tag.InnerHtml.AppendHtml(prevItem);
-            //}
-
-            // create a link to the next page, if exist
-            //if (PageModel.HasNextPage)
-            //{
-            //    TagBuilder nextItem = CreateTag(PageModel.PageNumber + 1, urlHelper);
-            //    tag.InnerHtml.AppendHtml(nextItem);
-            //}
 
             //create links to all pages
             for (int i = 1; i <= PageModel.TotalPages; i++)
@@ -66,7 +52,8 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
             }
             else
             {
-                link.Attributes["href"] = urlHelper.Action(PageAction, new { page = pageNumber });
+                PageUrlValues["page"] = pageNumber;
+                link.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);
             }
             item.AddCssClass("page-item");
             link.AddCssClass("page-link");

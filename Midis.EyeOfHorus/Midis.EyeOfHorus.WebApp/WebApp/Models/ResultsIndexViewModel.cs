@@ -10,7 +10,7 @@ namespace Midis.EyeOfHorus.WebApp.Models
     {
         public IEnumerable<Results> Results { get; set; }
         public PageViewModel PageViewModel { get; set; }
-        public string FilteredName { get; set; }
-        public string FilteredCameraID { get; set; }
+        public ResultsFilterViewModel ResultsFilterViewModel { get; set; }
+        public ResultsSortViewModel ResultsSortViewModel { get; set; }
     }
 }

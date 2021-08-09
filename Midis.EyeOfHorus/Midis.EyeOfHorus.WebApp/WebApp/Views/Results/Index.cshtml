@@ -9,10 +9,13 @@
             <form method="get">
                 <div class="form-inline form-group">
                     <label class="control-label" style="padding-right:10px">Worker: </label>
-                    <input name="filteredName" class="form-control" />
+                    <input name="filteredName" value="@Model.ResultsFilterViewModel.FilteredName" class="form-control" />
 
                     <label class="control-label" style="padding-right:10px; padding-left:7px">Camera: </label>
-                    <input name="filteredCameraId" class="form-control" />
+                    <input name="filteredCameraId" value="@Model.ResultsFilterViewModel.FilteredCameraId" class="form-control" />
+
+                    <label class="control-label" style="padding-right:10px; padding-left:7px">Date: </label>
+                    <input name="filteredDateTime" value="@Model.ResultsFilterViewModel.FilteredDateTime" type="datetime" class="form-control" />
 
                     <input type="submit" value="Filter" class="btn btn-primary" style="margin-left:7px" />
                 </div>
@@ -24,11 +27,42 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Worker</th>
-            <th scope="col">Camera ID</th>
-            <th scope="col">File name</th>
-            <th scope="col">Date and time</th>
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sortorder="@(Model.ResultsSortViewModel.WorkerSort)"
+                   asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+                   asp-route-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)"
+                   >Worker
+                </a>
+            </th>
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sortorder="@(Model.ResultsSortViewModel.CameraIdSort)"
+                   asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+                   asp-route-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)">
+                    Camera ID
+                </a>
+            </th>
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sortorder="@(Model.ResultsSortViewModel.FileNameSort)"
+                   asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+                   asp-route-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)">
+                    File name
+                </a>
+            </th>
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sortorder="@(Model.ResultsSortViewModel.DateTimeSort)"
+                   asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+                   asp-route-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)">
+                    Date and time
+                </a>
+            </th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -36,17 +70,23 @@
         @foreach (var result in Model.Results)
         {
             <tr>
-                <td>@result.Id</td>
                 <td>@result.Worker</td>
                 <td>@result.CameraID</td>
                 <td>@result.FileName</td>
                 <td>@result.DateTime</td>
                 <td class="for-buttons">
-                    <button type="button" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
+                    @if(@result.Worker=="Unidentified person")
+                    {
+                        <button type="button" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<page-link-short-list page-model="Model.PageViewModel" page-action="Index"></page-link-short-list>
+<page-link-short-list page-model="Model.PageViewModel" page-action="Index"
+           page-url-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+           page-url-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+           page-url-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)"
+           page-url-sortorder="@(Model.ResultsSortViewModel.Current)"></page-link-short-list>

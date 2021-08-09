@@ -29,11 +29,11 @@ namespace WebApp.Controllers
 
             var count = await source.CountAsync();
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
 
             WorkersIndexViewModel viewModel = new WorkersIndexViewModel
             {
-                PageViewModel = pageViewModel,
+                PageViewModel = new PageViewModel(count, page, pageSize),
+                WorkersFilterViewModel = new WorkersFilterViewModel(filteredName),
                 Workers = items
             };
             return View(viewModel);

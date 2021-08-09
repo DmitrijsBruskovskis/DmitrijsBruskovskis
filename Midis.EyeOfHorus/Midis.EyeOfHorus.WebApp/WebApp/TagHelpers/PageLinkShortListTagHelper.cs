@@ -24,6 +24,9 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
         public PageViewModel PageModel { get; set; }
         public string PageAction { get; set; }
 
+        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+        public Dictionary<string, object> PageUrlValues { get; set; } = new Dictionary<string, object>();
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             IUrlHelper urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
@@ -33,10 +36,10 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
             TagBuilder tag = new TagBuilder("ul");
             tag.AddCssClass("pagination");
 
-            //creating three references - to the current, previous and next page
+            // forming three references - to the current, previous and next page
             TagBuilder currentItem = CreateTag(PageModel.PageNumber, urlHelper);
 
-            //create a link to the previous page, if exist
+            // create a link to the previous page, if it exist
             if (PageModel.HasPreviousPage)
             {
                 TagBuilder prevItem = CreateTag(PageModel.PageNumber - 1, urlHelper);
@@ -44,14 +47,12 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
             }
 
             tag.InnerHtml.AppendHtml(currentItem);
-
-            //create a link to the next page, if exist
+            // create a link to the next page, if it exist
             if (PageModel.HasNextPage)
             {
                 TagBuilder nextItem = CreateTag(PageModel.PageNumber + 1, urlHelper);
                 tag.InnerHtml.AppendHtml(nextItem);
             }
-
             output.Content.AppendHtml(tag);
         }
 
@@ -65,7 +66,8 @@ namespace Midis.EyeOfHorus.WebApp.TagHelpers
             }
             else
             {
-                link.Attributes["href"] = urlHelper.Action(PageAction, new { page = pageNumber });
+                PageUrlValues["page"] = pageNumber;
+                link.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);
             }
             item.AddCssClass("page-item");
             link.AddCssClass("page-link");

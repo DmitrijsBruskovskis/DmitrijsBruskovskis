@@ -9,7 +9,7 @@
             <form method="get">
                 <div class="form-inline form-group">
                     <label class="control-label" style="padding-right:10px">Full Name: </label>
-                    <input name="filteredName" class="form-control" />
+                    <input name="filteredName" value="@Model.WorkersFilterViewModel.FilteredName" class="form-control" />
 
                     <input type="submit" value="Filter" class="btn btn-primary" style="margin-left:7px" />
                 </div>
@@ -47,7 +47,8 @@
     </tbody>
 </table>
 
-<page-link-long-list page-model="Model.PageViewModel" page-action="Index"></page-link-long-list>
+
+<page-link-long-list page-model="Model.PageViewModel" page-action="Index" page-url-filteredname="@(Model.WorkersFilterViewModel.FilteredName)"></page-link-long-list>
 
 @*Create modal*@
 <div id="createModal" class="modal fade" role="dialog">
