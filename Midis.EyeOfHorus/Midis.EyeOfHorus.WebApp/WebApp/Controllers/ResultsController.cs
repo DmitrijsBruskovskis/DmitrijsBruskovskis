@@ -76,6 +76,17 @@ namespace WebApp.Controllers
             };
             return View(viewModel);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id != null)
+            {
+                Results result = await db.InfoAboutFaces.FirstOrDefaultAsync(p => p.Id == id);
+                if (result != null)
+                    return View(result);
+            }
+            return NotFound();
+        }
         public ResultsController(PostGreSqlDbContext context)
         {
             db = context;

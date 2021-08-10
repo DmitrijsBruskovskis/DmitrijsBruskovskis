@@ -101,7 +101,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         new Dictionary<string, string[]>
                         {
                             {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
-                            { "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
+                            //{ "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
                             //{ "Test1", new[] { "1.jpg", "2.jpg" } },
                             //{ "Test2", new[] { "3.jpg", "4.jpg" } },
                         };
@@ -197,6 +197,12 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                 Worker = infoAboutImage[i].Worker,
                                 FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()         
                             };
+                            if (databaseInfoAboutFace.Worker == "Unidentified person")
+                            {
+                                byte[] imageData = null;
+                                imageData = GetImageAsByteArray(inputFilePath);
+                                databaseInfoAboutFace.Image = imageData;
+                            }
                             db.Add(databaseInfoAboutFace);
                             db.SaveChanges();
                         }

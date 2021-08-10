@@ -15,8 +15,9 @@ namespace WebApp.Models
         public string Worker { get; set; }
         public string FaceRectangle { get; set; }
         public string ClientID { get; set; }
-        public int  CameraID { get; set; }
+        public int CameraID { get; set; }
         public string FileName { get; set; }
+        public byte[] Image { get; set; }
         public DateTime DateTime { get; set; }
     }
 }

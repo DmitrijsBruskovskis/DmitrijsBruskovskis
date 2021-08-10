@@ -10,7 +10,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary.Models
         public int CameraID { get; set; }
         public string FaceRectangle { get; set; }
         public string FileName { get; set; }
+        public byte[] Image { get; set; }
         public DateTime DateTime { get; set; } = DateTime.Now;
-
     }
 }

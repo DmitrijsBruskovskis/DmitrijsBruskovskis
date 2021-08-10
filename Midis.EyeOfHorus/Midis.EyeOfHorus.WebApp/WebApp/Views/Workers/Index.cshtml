@@ -24,20 +24,20 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">FullName</th>
-            <th scope="col">Image</th>
-            <th scope="col">Actions</th>
+            <th class="text-center" scope="col">ID</th>
+            <th class="text-center" scope="col">FullName</th>
+            <th class="text-center" scope="col">Image</th>
+            <th class="text-center" scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var worker in Model.Workers)
         {
             <tr>
-                <td>@worker.Id</td>
-                <td>@worker.FullName</td>
-                <td>@worker.ImageName</td>
-                <td class="for-buttons">
+                <td align="center">@worker.Id</td>
+                <td align="center">@worker.FullName</td>
+                <td align="center">@worker.ImageName</td>
+                <td align="center" class="for-buttons">
                     <button type="button" onclick="Details(@worker.Id)" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
                     <button type="button" onclick="Edit(@worker.Id)" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal"><i class="far fa-edit"></i></button>
                     <button type="button" onclick="Delete(@worker.Id)" class="btn btn-danger btn-intable" data-toggle="modal" data-target="#deleteModal"><i class="far fa-trash-alt"></i></button>

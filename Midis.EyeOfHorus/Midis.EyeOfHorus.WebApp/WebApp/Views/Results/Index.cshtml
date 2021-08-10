@@ -27,16 +27,16 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">
+            <th class="text-center" align="center" scope="col">
                 <a asp-action="Index"
                    asp-route-sortorder="@(Model.ResultsSortViewModel.WorkerSort)"
                    asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
                    asp-route-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
-                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)"
-                   >Worker
+                   asp-route-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)">
+                    Worker
                 </a>
             </th>
-            <th scope="col">
+            <th class="text-center" align="center" scope="col">
                 <a asp-action="Index"
                    asp-route-sortorder="@(Model.ResultsSortViewModel.CameraIdSort)"
                    asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
@@ -45,7 +45,7 @@
                     Camera ID
                 </a>
             </th>
-            <th scope="col">
+            <th class="text-center" align="center" scope="col">
                 <a asp-action="Index"
                    asp-route-sortorder="@(Model.ResultsSortViewModel.FileNameSort)"
                    asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
@@ -54,7 +54,7 @@
                     File name
                 </a>
             </th>
-            <th scope="col">
+            <th class="text-center" align="center" scope="col">
                 <a asp-action="Index"
                    asp-route-sortorder="@(Model.ResultsSortViewModel.DateTimeSort)"
                    asp-route-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
@@ -63,21 +63,21 @@
                     Date and time
                 </a>
             </th>
-            <th scope="col">Actions</th>
+            <th class="text-center" align="center" scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var result in Model.Results)
         {
             <tr>
-                <td>@result.Worker</td>
-                <td>@result.CameraID</td>
-                <td>@result.FileName</td>
-                <td>@result.DateTime</td>
-                <td class="for-buttons">
-                    @if(@result.Worker=="Unidentified person")
+                <td align="center">@result.Worker</td>
+                <td align="center">@result.CameraID</td>
+                <td align="center">@result.FileName</td>
+                <td align="center">@result.DateTime</td>
+                <td align="center" class="for-buttons">
+                    @if (@result.Worker == "Unidentified person")
                     {
-                        <button type="button" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
+                        <button type="button" onclick="Details(@result.Id)" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
                     }
                 </td>
             </tr>
@@ -86,7 +86,26 @@
 </table>
 
 <page-link-short-list page-model="Model.PageViewModel" page-action="Index"
-           page-url-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
-           page-url-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
-           page-url-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)"
-           page-url-sortorder="@(Model.ResultsSortViewModel.Current)"></page-link-short-list>
+                      page-url-filteredname="@(Model.ResultsFilterViewModel.FilteredName)"
+                      page-url-filteredcameraid="@(Model.ResultsFilterViewModel.FilteredCameraId)"
+                      page-url-filtereddatetime="@(Model.ResultsFilterViewModel.FilteredDateTime)"
+                      page-url-sortorder="@(Model.ResultsSortViewModel.Current)">
+</page-link-short-list>
+
+@*Details modal*@
+<div id="detailsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="DetailsModalBodyDiv">
+            @{ await Html.RenderPartialAsync("Details", new WebApp.Models.Results()); }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Details(Id) {
+        var url = "/Results/Details?Id=" + Id;
+        $("#DetailsModalBodyDiv").load(url, function () {
+            $("#detailsModal").modal("show");
+        })
+    }
+</script>
