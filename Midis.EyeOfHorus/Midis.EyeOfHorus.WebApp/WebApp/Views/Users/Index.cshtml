@@ -1,0 +1,109 @@
+﻿@using Midis.EyeOfHorus.WebApp.Models
+@model Midis.EyeOfHorus.WebApp.Models.UsersIndexViewModel
+@addTagHelper *, Midis.EyeOfHorus.WebApp
+@{ ViewData["Title"] = "Users"; }
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form method="get">
+                <div class="form-inline form-group">
+                    <label class="control-label" style="padding-right:10px">Full Name: </label>
+                    <input name="filteredName" value="@Model.UsersFilterViewModel.FilteredName" class="form-control" />
+
+                    <input type="submit" value="Filter" class="btn btn-primary" style="margin-left:7px" />
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary right" style="margin-bottom:15px" data-toggle="modal" data-target="#createModal">Add user</button>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-center" scope="col">UserName</th>
+            <th class="text-center" scope="col">ClientID</th>
+            <th class="text-center" scope="col">EmailConfirmed</th>
+            <th class="text-center" scope="col">PhoneNumber</th>
+            <th class="text-center" scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+<tr>
+    <td align="center">@user.UserName</td>
+    <td align="center">@user.ClientID</td>
+    <td align="center">@user.EmailConfirmed</td>
+    <td align="center">@user.PhoneNumber</td>
+    <td align="center" class="for-buttons">
+        <button type="button" onclick="Details(@user.Id)" class="btn btn-info btn-intable" data-toggle="modal" data-target="#detailsModal"><i class="far fa-image"></i></button>
+        <button type="button" onclick="Edit(@user.Id)" class="btn btn-success btn-intable" data-toggle="modal" data-target="#editModal"><i class="far fa-edit"></i></button>
+        <button type="button" onclick="Delete(@user.Id)" class="btn btn-danger btn-intable" data-toggle="modal" data-target="#deleteModal"><i class="far fa-trash-alt"></i></button>
+    </td>
+</tr>
+}
+    </tbody>
+</table>
+
+
+<page-link-short-list page-model="Model.PageViewModel" page-action="Index" page-url-filteredname="@(Model.UsersFilterViewModel.FilteredName)"></page-link-short-list>
+
+@*Create modal*@
+<div id="createModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            @{ await Html.RenderPartialAsync("Create", new Midis.EyeOfHorus.WebApp.Models.UserViewModel()); }
+        </div>
+    </div>
+</div>
+
+@*Edit modal*@
+<div id="editModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="EditModalBodyDiv">
+            @{ @*await Html.RenderPartialAsync("Edit", new Midis.EyeOfHorus.WebApp.Models.ApplicationUser());*@ }
+        </div>
+    </div>
+</div>
+
+@*Delete modal*@
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="DeleteModalBodyDiv">
+            @{ @*await Html.RenderPartialAsync("Delete", new Midis.EyeOfHorus.WebApp.Models.ApplicationUser());*@ }
+        </div>
+    </div>
+</div>
+
+@*Details modal*@
+<div id="detailsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="DetailsModalBodyDiv">
+            @*@{ await Html.RenderPartialAsync("Details", new Midis.EyeOfHorus.WebApp.Models.ApplicationUser());*@ }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Edit(Id) {
+        var url = "/Users/Edit?Id=" + Id;
+        $("#EditModalBodyDiv").load(url, function () {
+            $("#editModal").modal("show");
+        })
+    }
+    function Delete(Id) {
+        var url = "/Users/Delete?Id=" + Id;
+        $("#DeleteModalBodyDiv").load(url, function () {
+            $("#deleteModal").modal("show");
+        })
+    }
+    function Details(Id) {
+        var url = "/Users/Details?Id=" + Id;
+        $("#DetailsModalBodyDiv").load(url, function () {
+            $("#detailsModal").modal("show");
+        })
+}</script>

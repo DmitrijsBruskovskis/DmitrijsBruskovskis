@@ -17,6 +17,8 @@ namespace WebApp.Data
 
         public DbSet<Results> Results { get; set; }
         public DbSet<Workers> Workers { get; set; }
+        public override DbSet<ApplicationUser> Users { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

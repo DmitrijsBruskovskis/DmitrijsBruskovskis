@@ -1,0 +1,62 @@
+﻿@model Midis.EyeOfHorus.WebApp.Models.UserViewModel
+<form asp-controller="users" asp-action="create" method="post">
+    <div class="modal-header">
+        <h4 class="modal-title">User creation</h4>
+    </div>
+
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label asp-for="UserName" class="control-label">User Name</label>
+                </div>
+                <div class="col">
+                    <span asp-validation-for="UserName" style="color: red; float:right"></span>
+                </div>
+            </div>
+            <input type="text" asp-for="UserName" required class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label asp-for="Email" class="control-label">Email</label>
+                </div>
+                <div class="col">
+                    <span asp-validation-for="Email" style="color: red; float:right"></span>
+                </div>
+            </div>
+            <input type="text" asp-for="Email" required class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label asp-for="Password" class="control-label">Password</label>
+                </div>
+                <div class="col">
+                    <span asp-validation-for="Password" style="color: red; float:right"></span>
+                </div>
+            </div>
+            <input type="text" asp-for="Password" required class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label asp-for="ClientID" class="control-label">ClientID</label>
+                </div>
+                <div class="col">
+                    <span asp-validation-for="ClientID" style="color: red; float:right"></span>
+                </div>
+            </div>
+            <input type="text" asp-for="ClientID" required class="form-control" />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" value="Send" class="btn btn-primary">Create</button>
+    </div>
+</form>
