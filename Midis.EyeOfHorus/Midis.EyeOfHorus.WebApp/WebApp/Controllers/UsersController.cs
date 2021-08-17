@@ -50,17 +50,24 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(UserViewModel uvm)
         {
-            ApplicationUser user = new ApplicationUser 
+            if (ModelState.IsValid)
             {
-                UserName = uvm.UserName,
-                Email = uvm.Email,
-                EmailConfirmed = true,
-                AccessFailedCount = 0,
-                LockoutEnabled = false,
-            };
-            var result = await _userManager.CreateAsync(user, uvm.Password);
-            //await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+                ApplicationUser user = new ApplicationUser 
+                {
+                    UserName = uvm.UserName,
+                    Email = uvm.Email,
+                    ClientID = uvm.ClientID,
+                    EmailConfirmed = true,
+                    AccessFailedCount = 0,
+                    LockoutEnabled = false,
+                };
+                var result = await _userManager.CreateAsync(user, uvm.Password);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(uvm);
+            }
         }
 
         [AcceptVerbs("Get", "Post")]
