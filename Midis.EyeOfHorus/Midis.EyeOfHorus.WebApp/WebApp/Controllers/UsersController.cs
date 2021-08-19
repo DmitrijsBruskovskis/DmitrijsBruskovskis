@@ -57,6 +57,7 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
                     UserName = uvm.UserName,
                     Email = uvm.Email,
                     ClientID = uvm.ClientID,
+                    PhoneNumber = uvm.PhoneNumber,
                     EmailConfirmed = true,
                     AccessFailedCount = 0,
                     LockoutEnabled = false,
@@ -81,6 +82,54 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
             if (users.Count > 0)
                 return Json(false);
             return Json(true);
+        }
+
+        [HttpGet]
+        [ActionName("Delete")]
+        public async Task<IActionResult> ConfirmDelete(string id)
+        {
+            if (id != null)
+            {
+                ApplicationUser user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
+
+                UserViewModel userViewModel = new UserViewModel();
+                userViewModel.Id = user.Id;
+                userViewModel.AccessFailedCount = user.AccessFailedCount;
+                userViewModel.LockoutEnabled = user.LockoutEnabled;
+                userViewModel.LockoutEnd = user.LockoutEnd;
+                userViewModel.NormalizedEmail = user.NormalizedEmail;
+                userViewModel.NormalizedUserName = user.NormalizedUserName;
+                userViewModel.PhoneNumber = user.PhoneNumber;
+                userViewModel.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                userViewModel.SecurityStamp = user.SecurityStamp;
+                userViewModel.TwoFactorEnabled = user.TwoFactorEnabled;
+                userViewModel.UserName = user.UserName;
+                userViewModel.ClientID = user.ClientID;
+                userViewModel.CompanyName = user.CompanyName;
+                userViewModel.ConcurrencyStamp = user.ConcurrencyStamp;
+                userViewModel.Email = user.Email;
+                userViewModel.EmailConfirmed = user.EmailConfirmed;
+
+                if (userViewModel != null)
+                    return View(userViewModel);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (id != null)
+            {
+                ApplicationUser user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
+                if (user != null)
+                {
+                    db.Users.Remove(user);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+            }
+            return NotFound();
         }
     }
 }

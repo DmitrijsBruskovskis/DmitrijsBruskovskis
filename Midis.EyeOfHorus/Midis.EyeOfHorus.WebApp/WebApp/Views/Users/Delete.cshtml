@@ -1,0 +1,28 @@
+﻿@model Midis.EyeOfHorus.WebApp.Models.UserViewModel
+@{ Layout = null;}
+
+<form asp-controller="users" asp-action="delete" asp-route-id="@Model.Id">
+    <div class="modal-header">
+        <h4 class="modal-title">User deletion</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label">Full Name</label>
+            <input type="text" asp-for="UserName" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="control-label">Email</label>
+            <input type="text" asp-for="Email" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ClientID" class="control-label">ClientID</label>
+            <input type="text" asp-for="ClientID" readonly class="form-control" />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" value="Save" class="btn btn-primary">Confirm deletion</button>
+    </div>
+</form>
