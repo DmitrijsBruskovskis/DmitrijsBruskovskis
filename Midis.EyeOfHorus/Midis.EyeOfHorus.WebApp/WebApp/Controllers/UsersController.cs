@@ -62,7 +62,7 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
                     AccessFailedCount = 0,
                     LockoutEnabled = false,
                 };
-                var result = await _userManager.CreateAsync(user, uvm.Password);
+                var result = await _userManager.CreateAsync(user, uvm.Password);               
                 return RedirectToAction("Index");
             }
             else
@@ -79,6 +79,20 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
                 return Json(true);
             }
             List<ApplicationUser> users = db.Users.Where(x => x.UserName == userName).ToList();
+            if (users.Count > 0)
+                return Json(false);
+            return Json(true);
+        }
+
+
+        [AcceptVerbs("Get", "Post")]
+        public IActionResult DoesEmailAlreadyUsed(string email/*, string previousEmail*/)
+        {
+            //if (email == previousEmail)
+            //{
+            //    return Json(true);
+            //}
+            List<ApplicationUser> users = db.Users.Where(x => x.Email == email).ToList();
             if (users.Count > 0)
                 return Json(false);
             return Json(true);
@@ -130,6 +144,50 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
                 }
             }
             return NotFound();
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            TempData["returnurl"] = Request.Headers["Referer"].ToString();
+            if (id != null)
+            {
+                ApplicationUser user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
+
+                UserViewModel userViewModel = new UserViewModel();
+                userViewModel.Id = user.Id;
+                userViewModel.AccessFailedCount = user.AccessFailedCount;
+                userViewModel.LockoutEnabled = user.LockoutEnabled;
+                userViewModel.LockoutEnd = user.LockoutEnd;
+                userViewModel.NormalizedEmail = user.NormalizedEmail;
+                userViewModel.NormalizedUserName = user.NormalizedUserName;
+                userViewModel.PhoneNumber = user.PhoneNumber;
+                userViewModel.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                userViewModel.SecurityStamp = user.SecurityStamp;
+                userViewModel.TwoFactorEnabled = user.TwoFactorEnabled;
+                userViewModel.UserName = user.UserName;
+                userViewModel.ClientID = user.ClientID;
+                userViewModel.CompanyName = user.CompanyName;
+                userViewModel.ConcurrencyStamp = user.ConcurrencyStamp;
+                userViewModel.Email = user.Email;
+                userViewModel.EmailConfirmed = user.EmailConfirmed;
+
+                if (userViewModel != null)
+                    return View(userViewModel);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserViewModel uvm)
+        {
+            ApplicationUser user = await db.Users.FirstOrDefaultAsync(p => p.Id == uvm.Id);
+            user.UserName = uvm.UserName;
+            user.Email = uvm.Email;
+            user.ClientID = uvm.ClientID;
+            user.PhoneNumber = uvm.PhoneNumber;
+ 
+            await db.SaveChangesAsync();
+            return Redirect(TempData["returnurl"].ToString());
         }
     }
 }
