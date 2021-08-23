@@ -33,7 +33,7 @@ namespace Midis.EyeOfHorus.WebApp.Areas.Identity.Pages.Account
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
+            _logger = logger;W
             _emailSender = emailSender;
         }
 
@@ -49,12 +49,13 @@ namespace Midis.EyeOfHorus.WebApp.Areas.Identity.Pages.Account
             [Required]
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "UserName")]
+            //[Remote("DoesUserAlreadyExist", "Users", ErrorMessage = "User already exist!")]
             public string UserName { get; set; }
 
             [Required]
             [EmailAddress]
-            [Display(Name = "Email")]            
-            [Remote("DoesEmailAlreadyUsed", "Users",/* AdditionalFields = "previousEmail", */ErrorMessage = "Email already in use!")]
+            [Display(Name = "Email")]
+            [Remote("DoesEmailAlreadyUsed", "Users", ErrorMessage = "Email already in use!")]
             public string Email { get; set; }
 
             [Required]
@@ -68,7 +69,12 @@ namespace Midis.EyeOfHorus.WebApp.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
-
+        public JsonResult OnPostCheckEmail()
+        {
+            var user = _userManager.FindByEmailAsync(Input.Email).Result;
+            var valid = user == null;
+            return new JsonResult(valid);
+        }
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;

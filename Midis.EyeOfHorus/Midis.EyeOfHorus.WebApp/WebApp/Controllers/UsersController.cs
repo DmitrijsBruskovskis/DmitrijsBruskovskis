@@ -86,7 +86,7 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
 
 
         [AcceptVerbs("Get", "Post")]
-        public IActionResult DoesEmailAlreadyUsed(string email/*, string previousEmail*/)
+        public IActionResult DoesEmailAlreadyUsed(string email)
         {
             //if (email == previousEmail)
             //{
