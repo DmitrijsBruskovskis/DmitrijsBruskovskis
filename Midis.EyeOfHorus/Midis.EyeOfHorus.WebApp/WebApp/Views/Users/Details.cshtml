@@ -1,1 +1,65 @@
-﻿
+﻿@model Midis.EyeOfHorus.WebApp.Models.UserViewModel
+@{ Layout = null;}
+
+<form asp-controller="users" asp-action="details" asp-route-id="@Model.Id">
+    <div class="modal-header">
+        <h4 class="modal-title">Details about @Model.UserName</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label">User Name</label>
+            <input type="text" asp-for="UserName" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="control-label">Email</label>
+            <input type="text" asp-for="Email" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ClientID" class="control-label">CLientID</label>
+            <input type="text" asp-for="ClientID" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+            <input type="text" asp-for="PhoneNumber" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="AccessFailedCount" class="control-label">AccessFailedCount</label>
+            <input asp-for="AccessFailedCount" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="SecurityStamp" class="control-label">SecurityStamp</label>
+            <input asp-for="SecurityStamp" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ConcurrencyStamp" class="control-label">ConcurrencyStamp</label>
+            <input asp-for="ConcurrencyStamp" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="LockoutEnabled" class="control-label">LockoutEnabled</label>
+            <input asp-for="LockoutEnabled" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="LockoutEnd" class="control-label">LockoutEnd</label>
+            <input asp-for="LockoutEnd" readonly class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumberConfirmed" class="control-label">PhoneNumberConfirmed</label>
+            <input asp-for="PhoneNumberConfirmed" readonly class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TwoFactorEnabled" class="control-label">TwoFactorEnabled</label>
+            <input asp-for="TwoFactorEnabled" readonly class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="EmailConfirmed" class="control-label">EmailConfirmed</label>
+            <input asp-for="EmailConfirmed" readonly class="form-control" />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>

@@ -37,8 +37,12 @@ namespace WebApp
             services.AddDbContext<PostGreSqlDbContext>(options =>
                     options.UseNpgsql(Configuration.GetConnectionString("PostGreSqlConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<ApplicationUser>(options => 
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
         }
 

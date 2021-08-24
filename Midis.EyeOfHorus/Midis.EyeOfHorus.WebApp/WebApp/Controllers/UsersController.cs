@@ -20,7 +20,7 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
             _userManager = userManager;
             db = context;
         }
-        public async Task<IActionResult> Index(int page = 1, string filteredName = null)
+        public async Task<IActionResult> Index(int page = 1, string filteredName = null, string filteredClientID = null, string filteredEmail = null)
         {
             int pageSize = 10;
 
@@ -29,6 +29,14 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
             {
                 source = source.Where(p => p.UserName.Contains(filteredName));
             }
+            if (!String.IsNullOrEmpty(filteredClientID))
+            {
+                source = source.Where(p => p.ClientID.Contains(filteredClientID));
+            }
+            if (!String.IsNullOrEmpty(filteredEmail))
+            {
+                source = source.Where(p => p.Email.Contains(filteredEmail));
+            }
 
             var count = await source.CountAsync();
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
@@ -36,7 +44,7 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
             UsersIndexViewModel viewModel = new UsersIndexViewModel
             {
                 PageViewModel = new PageViewModel(count, page, pageSize),
-                UsersFilterViewModel = new UsersFilterViewModel(filteredName),
+                UsersFilterViewModel = new UsersFilterViewModel(filteredName, filteredClientID, filteredEmail),
                 Users = items
             };
             return View(viewModel);
@@ -86,12 +94,12 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
 
 
         [AcceptVerbs("Get", "Post")]
-        public IActionResult DoesEmailAlreadyUsed(string email)
+        public IActionResult DoesEmailAlreadyUsed(string email, string previousEmail)
         {
-            //if (email == previousEmail)
-            //{
-            //    return Json(true);
-            //}
+            if (email == previousEmail)
+            {
+                return Json(true);
+            }
             List<ApplicationUser> users = db.Users.Where(x => x.Email == email).ToList();
             if (users.Count > 0)
                 return Json(false);
@@ -188,6 +196,37 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
  
             await db.SaveChangesAsync();
             return Redirect(TempData["returnurl"].ToString());
+        }
+
+        public async Task<IActionResult> Details(string id)
+        {
+            TempData["returnurl"] = Request.Headers["Referer"].ToString();
+            if (id != null)
+            {
+                ApplicationUser user = await db.Users.FirstOrDefaultAsync(p => p.Id == id);
+
+                UserViewModel userViewModel = new UserViewModel();
+                userViewModel.Id = user.Id;
+                userViewModel.AccessFailedCount = user.AccessFailedCount;
+                userViewModel.LockoutEnabled = user.LockoutEnabled;
+                userViewModel.LockoutEnd = user.LockoutEnd;
+                userViewModel.NormalizedEmail = user.NormalizedEmail;
+                userViewModel.NormalizedUserName = user.NormalizedUserName;
+                userViewModel.PhoneNumber = user.PhoneNumber;
+                userViewModel.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                userViewModel.SecurityStamp = user.SecurityStamp;
+                userViewModel.TwoFactorEnabled = user.TwoFactorEnabled;
+                userViewModel.UserName = user.UserName;
+                userViewModel.ClientID = user.ClientID;
+                userViewModel.CompanyName = user.CompanyName;
+                userViewModel.ConcurrencyStamp = user.ConcurrencyStamp;
+                userViewModel.Email = user.Email;
+                userViewModel.EmailConfirmed = user.EmailConfirmed;
+
+                if (userViewModel != null)
+                    return View(userViewModel);
+            }
+            return NotFound();
         }
     }
 }

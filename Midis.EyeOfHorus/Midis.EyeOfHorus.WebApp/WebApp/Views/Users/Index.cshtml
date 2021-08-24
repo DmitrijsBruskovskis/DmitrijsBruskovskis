@@ -5,11 +5,17 @@
 
 <div class="container">
     <div class="row">
-        <div class="col">
+        <div class="col-10">
             <form method="get">
                 <div class="form-inline form-group">
-                    <label class="control-label" style="padding-right:10px">Full Name: </label>
+                    <label class="control-label" style="padding-right:10px">UserName: </label>
                     <input name="filteredName" value="@Model.UsersFilterViewModel.FilteredName" class="form-control" />
+
+                    <label class="control-label" style="padding-right:10px; padding-left:7px">ClientID: </label>
+                    <input name="filteredClientID" value="@Model.UsersFilterViewModel.FilteredClientID" class="form-control" />
+
+                    <label class="control-label" style="padding-right:10px; padding-left:7px">Email: </label>
+                    <input name="filteredEmail" value="@Model.UsersFilterViewModel.FilteredEmail" class="form-control" />
 
                     <input type="submit" value="Filter" class="btn btn-primary" style="margin-left:7px" />
                 </div>
@@ -49,7 +55,11 @@
     </tbody>
 </table>
 
-<page-link-short-list page-model="Model.PageViewModel" page-action="Index" page-url-filteredname="@(Model.UsersFilterViewModel.FilteredName)"></page-link-short-list>
+<page-link-short-list page-model="Model.PageViewModel" page-action="Index"
+                      page-url-filteredname="@(Model.UsersFilterViewModel.FilteredName)"
+                      page-url-filteredclientid="@(Model.UsersFilterViewModel.FilteredClientID)"
+                      page-url-filteredemail="@(Model.UsersFilterViewModel.FilteredEmail)">
+</page-link-short-list>
 
 @*Create modal*@
 <div id="createModal" class="modal fade" role="dialog">
@@ -82,7 +92,7 @@
 <div id="detailsModal" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content" id="DetailsModalBodyDiv">
-            @*@{ await Html.RenderPartialAsync("Details", new Midis.EyeOfHorus.WebApp.Models.ApplicationUser());*@ }
+            @{ await Html.RenderPartialAsync("Details", new Midis.EyeOfHorus.WebApp.Models.UserViewModel()); }
         </div>
     </div>
 </div>

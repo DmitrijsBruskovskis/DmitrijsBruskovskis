@@ -13,6 +13,7 @@ namespace Midis.EyeOfHorus.WebApp.Models
         [Remote("DoesUserExist", "Users", AdditionalFields = "previousUserName", ErrorMessage = "User already exist!")]
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
+        [Remote("DoesEmailAlreadyUsed", "Users", AdditionalFields = "previousEmail", ErrorMessage = "Email already in use!")]
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
         public bool EmailConfirmed { get; set; }

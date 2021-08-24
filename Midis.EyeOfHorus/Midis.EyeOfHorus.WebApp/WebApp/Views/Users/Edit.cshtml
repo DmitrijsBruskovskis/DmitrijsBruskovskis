@@ -3,6 +3,7 @@
 
 <form asp-controller="users" asp-action="edit" asp-route-id="@Model.Id" method="post">
     @Html.Hidden("previousUserName", Model.UserName)
+    @Html.Hidden("previousEmail", Model.Email)
     <div class="modal-header">
         <h4 class="modal-title">User editing</h4>
     </div>
@@ -32,18 +33,6 @@
             </div>
             <input type="text" asp-for="Email" required class="form-control" />
         </div>
-
-        @*<div class="form-group">
-            <div class="row">
-                <div class="col">
-                    <label asp-for="Password" class="control-label">Password</label>
-                </div>
-                <div class="col">
-                    <span asp-validation-for="Password" style="color: red; float:right"></span>
-                </div>
-            </div>
-            <input type="text" asp-for="Password" required class="form-control" />
-        </div>*@
 
         <div class="form-group">
             <div class="row">
