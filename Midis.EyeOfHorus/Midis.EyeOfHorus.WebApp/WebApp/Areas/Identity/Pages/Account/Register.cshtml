@@ -23,6 +23,16 @@
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Input.PhoneNumber"></label>
+                <input asp-for="Input.PhoneNumber" type="text" class="form-control" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.ClientID"></label>
+                <input asp-for="Input.ClientID" type="text" class="form-control" />
+                <span asp-validation-for="Input.ClientID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Password"></label>
                 <input asp-for="Input.Password" class="form-control" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>

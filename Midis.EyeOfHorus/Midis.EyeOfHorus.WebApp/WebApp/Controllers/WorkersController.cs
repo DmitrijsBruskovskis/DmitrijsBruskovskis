@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "client,admin")]
     public class WorkersController : Controller
     {
         private readonly ApplicationDbContext db;

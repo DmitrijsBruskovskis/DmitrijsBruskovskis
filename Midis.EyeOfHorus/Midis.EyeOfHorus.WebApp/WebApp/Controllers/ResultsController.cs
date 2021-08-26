@@ -8,9 +8,11 @@ using WebApp.Data;
 using WebApp.Models;
 using Midis.EyeOfHorus.WebApp.Data;
 using Midis.EyeOfHorus.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
+    [Authorize(Roles = "client,admin")]
     public class ResultsController : Controller
     {
         private readonly PostGreSqlDbContext db;

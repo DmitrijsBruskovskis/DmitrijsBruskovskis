@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Midis.EyeOfHorus.WebApp.Models;
@@ -10,6 +11,7 @@ using WebApp.Data;
 
 namespace Midis.EyeOfHorus.WebApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -70,7 +72,8 @@ namespace Midis.EyeOfHorus.WebApp.Controllers
                     AccessFailedCount = 0,
                     LockoutEnabled = false,
                 };
-                var result = await _userManager.CreateAsync(user, uvm.Password);               
+                await _userManager.CreateAsync(user, uvm.Password);
+                await _userManager.AddToRoleAsync(user, "client");
                 return RedirectToAction("Index");
             }
             else
