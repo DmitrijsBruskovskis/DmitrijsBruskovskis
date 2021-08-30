@@ -12,6 +12,7 @@ namespace Midis.EyeOfHorus.WebApp.Models
         public int Id { get; set; }       
         public string FullName { get; set; }
         public string ImageName { get; set; }
+        public string ClientID { get; set; }
         public IFormFile Avatar { get; set; }
     }
 }

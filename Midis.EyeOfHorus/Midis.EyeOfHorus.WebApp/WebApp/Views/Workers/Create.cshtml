@@ -29,6 +29,20 @@
             </div>
             <input type="file" asp-for="Avatar" required class="form-control" />
         </div>
+        @if (User.IsInRole("admin"))
+        {
+            <div class="form-group">
+                <div class="row">
+                    <div class="col">
+                        <label asp-for="ClientID" class="control-label">ClientID</label>
+                    </div>
+                    <div class="col">
+                        <span asp-validation-for="ClientID" style="color: red; float:right"></span>
+                    </div>
+                </div>
+                <input type="text" asp-for="ClientID" required class="form-control" />
+            </div>
+        }
     </div>
 
     <div class="modal-footer">

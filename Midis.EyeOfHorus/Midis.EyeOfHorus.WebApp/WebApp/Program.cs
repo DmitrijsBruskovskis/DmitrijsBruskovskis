@@ -14,10 +14,6 @@ namespace WebApp
 {
     public class Program
     {
-        //public static void Main(string[] args)
-        //{
-        //    CreateHostBuilder(args).Build().Run();
-        //}
         public static async Task Main(string[] args)
         {
 
@@ -38,7 +34,6 @@ namespace WebApp
                     logger.LogError(ex, "An error occurred while seeding the database.");
                 }
             }
-
             host.Run();
         }
 

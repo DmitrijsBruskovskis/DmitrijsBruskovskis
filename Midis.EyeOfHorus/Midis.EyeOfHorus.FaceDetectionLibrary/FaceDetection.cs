@@ -1,18 +1,21 @@
-﻿using System;
+﻿using DlibDotNet;
+using Microsoft.Azure.CognitiveServices.Vision.Face;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using DlibDotNet;
-using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
-using Newtonsoft.Json;
-using Dlib = DlibDotNet.Dlib;
-using Microsoft.Azure.CognitiveServices.Vision.Face;
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
-using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
+using static LinqToDB.DataProvider.SqlServer.SqlServerProviderAdapter;
+using Dlib = DlibDotNet.Dlib;
 
 namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
@@ -22,7 +25,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         {
             bool enabled = true;
             // set up Dlib facedetector
-            while(enabled)
+            while (enabled)
             {
                 Thread.Sleep((int)(3000));
                 DirectoryInfo dir = new DirectoryInfo(inputFilePath);
@@ -96,15 +99,45 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                     //Face group creation                  
                     // Create a dictionary for all images, grouping similar ones under the same key.
-                    Console.WriteLine("Person group creation and training");
-                    Dictionary<string, string[]> personDictionary =
-                        new Dictionary<string, string[]>
+
+                    string connString = "Server=(localdb)\\mssqllocaldb;Database=aspnet-WebApp-2BE43A8A-E317-4564-94DC-4EBE6995F407;Trusted_Connection=True;MultipleActiveResultSets=true";
+                    var workersList = new List<Workers>();
+                    using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(connString))
+                    {
+                        SqlCommand cmd = new SqlCommand("DBO_WORKERS_GET_LIST", con);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        con.Open();
+                        SqlDataReader rdr = cmd.ExecuteReader();
+                        while (rdr.Read())
                         {
-                            {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
+                            workersList.Add(new Workers
+                            {
+                                Id = Convert.ToInt32(rdr[0]),
+                                FullName = rdr[1].ToString(),
+                                ImageName = rdr[2].ToString(),
+                                Avatar = (byte[])rdr[3],
+                                ClientID = rdr[4].ToString()
+                            });
+                        }
+                    }
+                    var workersForProcessing = new WorkersForProcessing();
+                    for (int i = 0; i <= workersList.Count; i++)
+                    {
+                        workersForProcessing.FullName = workersList[i].FullName;
+                        workersForProcessing.Avatar = workersList[i].Avatar;
+                    }
+
+                    Console.WriteLine("Person group creation and training");
+                    Dictionary<string, byte[]> personDictionary =
+                        new Dictionary<string, byte[]>
+                        {
+                            { workersForProcessing.FullName, workersForProcessing.Avatar}
+                            //    {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
                             //{ "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
                             //{ "Test1", new[] { "1.jpg", "2.jpg" } },
                             //{ "Test2", new[] { "3.jpg", "4.jpg" } },
                         };
+                    //Todo! затестить этого франкнштейна)
 
                     // Create a person group. 
                     string personGroupId = Guid.NewGuid().ToString();
@@ -120,11 +153,12 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         // Add face to the person group person.
                         foreach (var similarImage in personDictionary[groupedFace])
                         {
-                            Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
+                            Console.WriteLine($"Add face to the person group person({groupedFace}) from image");
 
-                            using Stream imageFileStream = File.OpenRead($"{vocabularyPath}{similarImage}");
+                            //using Stream imageFileStream = File.OpenRead($"{vocabularyPath}{similarImage}");
                             await faceClient.PersonGroupPerson.AddFaceFromStreamAsync(
-                                personGroupId, person.PersonId, imageFileStream);
+                                personGroupId, person.PersonId, similarImage);
+                            //Нужен стрим картинки, бяка
                         }
                     }
 
@@ -152,9 +186,9 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                     var identifyResults = await faceClient.Face.IdentifyAsync(sourceFaceIds, personGroupId, null, 1, 0.0000001);
 
-                    for(int i = 0; i < identifyResults.Count; i++ )
-                    {       
-                        for(int j = 0; j < identifyResults[i].Candidates.Count; j++)
+                    for (int i = 0; i < identifyResults.Count; i++)
+                    {
+                        for (int j = 0; j < identifyResults[i].Candidates.Count; j++)
                         {
                             if (identifyResults[i].Candidates[j].Confidence > 0.51)
                             {
@@ -195,7 +229,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                 CameraID = Int32.Parse(cameraID),
                                 FileName = fileName,
                                 Worker = infoAboutImage[i].Worker,
-                                FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()         
+                                FaceRectangle = infoAboutImage[i].FaceRectangle.ToString()
                             };
                             if (databaseInfoAboutFace.Worker == "Unidentified person")
                             {
@@ -225,7 +259,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     BinaryReader binaryReader = new BinaryReader(fileStream);
                     return binaryReader.ReadBytes((int)fileStream.Length);
                 }
-            }    
+            }
         }
     }
 }

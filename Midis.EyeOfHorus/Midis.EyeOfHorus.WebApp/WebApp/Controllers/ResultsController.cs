@@ -9,18 +9,25 @@ using WebApp.Models;
 using Midis.EyeOfHorus.WebApp.Data;
 using Midis.EyeOfHorus.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApp.Controllers
 {
     [Authorize(Roles = "client,admin")]
     public class ResultsController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly PostGreSqlDbContext db;
         public async Task<IActionResult> Index(string filteredName = null, int? filteredCameraId = null, string filteredDateTime = null, int page = 1, ResultsSortState sortOrder = ResultsSortState.CameraIdAsc)
         {
             int pageSize = 20;
 
             IQueryable<Results> results = db.InfoAboutFaces;
+            var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if(currentUser.ClientID!="admin")
+                results = results.Where(p => p.ClientID.Equals(currentUser.ClientID));
+
             if (!String.IsNullOrEmpty(filteredName))
             {
                 results = results.Where(p => p.Worker.Contains(filteredName));
@@ -83,15 +90,26 @@ namespace WebApp.Controllers
         {
             if (id != null)
             {
+                var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
                 Results result = await db.InfoAboutFaces.FirstOrDefaultAsync(p => p.Id == id);
-                if (result != null)
-                    return View(result);
+                if (currentUser.ClientID != "admin")
+                {
+                    if (currentUser.ClientID == result.ClientID)
+                        if (result != null)
+                            return View(result);
+                }
+                else
+                {
+                    if (result != null)
+                        return View(result);
+                }
             }
             return NotFound();
         }
-        public ResultsController(PostGreSqlDbContext context)
+        public ResultsController(PostGreSqlDbContext context, UserManager<ApplicationUser> userManager)
         {
             db = context;
+            _userManager = userManager;
         }
     }
 }

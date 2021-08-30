@@ -16,7 +16,7 @@
             <input type="text" asp-for="Email" readonly class="form-control" />
         </div>
         <div class="form-group">
-            <label asp-for="ClientID" class="control-label">CLientID</label>
+            <label asp-for="ClientID" class="control-label">ClientID</label>
             <input type="text" asp-for="ClientID" readonly class="form-control" />
         </div>
         <div class="form-group">
@@ -37,25 +37,53 @@
         </div>
         <div class="form-group">
             <label asp-for="LockoutEnabled" class="control-label">LockoutEnabled</label>
-            <input asp-for="LockoutEnabled" readonly class="form-control" />
+            @if (Model.PhoneNumberConfirmed == true)
+            {
+                <input value="Yes" readonly class="form-control" />
+            }
+            else
+            {
+                <input value="No" readonly class="form-control" />
+            }
         </div>
         <div class="form-group">
             <label asp-for="LockoutEnd" class="control-label">LockoutEnd</label>
-            <input asp-for="LockoutEnd" readonly class="form-control" />
+            <input type="datetime" asp-for="LockoutEnd" readonly class="form-control" />
         </div>
         <div class="form-group">
             <label asp-for="PhoneNumberConfirmed" class="control-label">PhoneNumberConfirmed</label>
-            <input asp-for="PhoneNumberConfirmed" readonly class="form-control" />
+            @if (Model.PhoneNumberConfirmed == true)
+            {
+                <input value="Yes" readonly class="form-control" />
+            }
+            else
+            {
+                <input value="No" readonly class="form-control" />
+            }
         </div>
 
         <div class="form-group">
             <label asp-for="TwoFactorEnabled" class="control-label">TwoFactorEnabled</label>
-            <input asp-for="TwoFactorEnabled" readonly class="form-control" />
+            @if (Model.TwoFactorEnabled == true)
+            {
+                <input value="Yes" readonly class="form-control" />
+            }
+            else
+            {
+                <input value="No" readonly class="form-control" />
+            }
         </div>
 
         <div class="form-group">
             <label asp-for="EmailConfirmed" class="control-label">EmailConfirmed</label>
-            <input asp-for="EmailConfirmed" readonly class="form-control" />
+            @if (Model.EmailConfirmed == true)
+            {
+                <input value="Yes" readonly class="form-control" />
+            }
+            else
+            {
+                <input value="No" readonly class="form-control" />
+            }
         </div>
     </div>
 
