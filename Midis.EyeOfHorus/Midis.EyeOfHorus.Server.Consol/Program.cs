@@ -26,13 +26,13 @@ namespace Consol
             string inputFilePath = configuration.GetSection("InputFilePath").Get<string>();
             string subscriptionKey = configuration.GetSection("SubscriptionKey").Get<string>();
             string uriBase = configuration.GetSection("UriBase").Get<string>();
-            string vocabularyPath = configuration.GetSection("VocabularyPath").Get<string>();
+            string databaseConnString = configuration.GetSection("databaseConnString").Get<string>();
 
             // Create FaceClient (Azure face API)
             IFaceClient client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) { Endpoint = "https://midiseu.cognitiveservices.azure.com" };
 
             // Library using
-            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase, client, vocabularyPath);
+            FaceDetectionLibrary.DetectFacesAsync(inputFilePath, subscriptionKey, uriBase, client, databaseConnString);
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection)

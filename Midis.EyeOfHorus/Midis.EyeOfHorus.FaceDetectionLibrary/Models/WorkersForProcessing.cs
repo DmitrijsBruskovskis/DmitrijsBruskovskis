@@ -8,5 +8,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary.Models
     {
         public string FullName { get; set; }
         public byte[] Avatar { get; set; }
-    }
+        public string ClientID { get; set; }
+}
 }

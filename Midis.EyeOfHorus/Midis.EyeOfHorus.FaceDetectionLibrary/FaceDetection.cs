@@ -21,7 +21,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 {
     public class FaceDetectionLibrary
     {
-        public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string vocabularyPath)
+        public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string databaseConnString)
         {
             bool enabled = true;
             // set up Dlib facedetector
@@ -45,7 +45,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                         if (faces.Length != 0)
                         {
                             Console.WriteLine("Picture " + file.Name + " have faces, sending data to Azure");
-                            MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, file.Name, client, vocabularyPath, inputFilePath).Wait();
+                            MakeAnalysisRequestAsync(_inputFilePath, subscriptionKey, uriBase, file.Name, client, databaseConnString, inputFilePath).Wait();
                         }
                         Console.WriteLine();
                         file.Delete();
@@ -59,7 +59,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             // Gets the analysis of the specified image by using the Face REST API.
-            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string vocabularyPath, string inputPathWithoutFileName)
+            static async Task MakeAnalysisRequestAsync(string inputFilePath, string subscriptionKey, string uriBase, string fileName, IFaceClient faceClient, string databaseConnString, string inputPathWithoutFileName)
             {
                 HttpClient client = new HttpClient();
 
@@ -98,14 +98,12 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     var infoAboutImage = JsonConvert.DeserializeObject<IList<InfoAboutImage>>(contentString);
 
                     //Face group creation                  
-                    // Create a dictionary for all images, grouping similar ones under the same key.
-
-                    string connString = "Server=(localdb)\\mssqllocaldb;Database=aspnet-WebApp-2BE43A8A-E317-4564-94DC-4EBE6995F407;Trusted_Connection=True;MultipleActiveResultSets=true";
+                    // Create a dictionary for all images, grouping similar ones under the same key.                   
                     var workersList = new List<Workers>();
-                    using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(connString))
+                    using (System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(databaseConnString))
                     {
-                        SqlCommand cmd = new SqlCommand("DBO_WORKERS_GET_LIST", con);
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.Workers", con);
+                        cmd.CommandType = CommandType.Text;
                         con.Open();
                         SqlDataReader rdr = cmd.ExecuteReader();
                         while (rdr.Read())
@@ -120,46 +118,36 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                             });
                         }
                     }
-                    var workersForProcessing = new WorkersForProcessing();
-                    for (int i = 0; i <= workersList.Count; i++)
+                    var workerListForProcessing = new List<WorkersForProcessing>();
+                    for (int i = 0; i < workersList.Count; i++)
                     {
-                        workersForProcessing.FullName = workersList[i].FullName;
-                        workersForProcessing.Avatar = workersList[i].Avatar;
+                        var workerForProcessing = new WorkersForProcessing();
+                        workerForProcessing.FullName = workersList[i].FullName;
+                        workerForProcessing.Avatar = workersList[i].Avatar;
+                        workerForProcessing.ClientID = workersList[i].ClientID;
+                        workerListForProcessing.Add(workerForProcessing);
                     }
-
                     Console.WriteLine("Person group creation and training");
-                    Dictionary<string, byte[]> personDictionary =
-                        new Dictionary<string, byte[]>
-                        {
-                            { workersForProcessing.FullName, workersForProcessing.Avatar}
-                            //    {"Dzon Skotch", new[] { "Dzon_Skotch_1.jpeg", "Dzon_Skotch_2.jpeg" } },
-                            //{ "Matiju Ferst", new[] { "Matiju_Ferst_1.jpeg"} },
-                            //{ "Test1", new[] { "1.jpg", "2.jpg" } },
-                            //{ "Test2", new[] { "3.jpg", "4.jpg" } },
-                        };
-                    //Todo! затестить этого франкнштейна)
 
                     // Create a person group. 
                     string personGroupId = Guid.NewGuid().ToString();
                     Console.WriteLine($"Create a person group ({personGroupId}).");
                     await faceClient.PersonGroup.CreateAsync(personGroupId, personGroupId, null, RecognitionModel.Recognition03);
                     // The similar faces will be grouped into a single person group person.
-                    foreach (var groupedFace in personDictionary.Keys)
+                    foreach (var worker in workerListForProcessing)
                     {
                         // Limit TPS
                         await Task.Delay(250);
-                        Person person = await faceClient.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: groupedFace);
-                        Console.WriteLine($"Create a person group person '{groupedFace}'.");
-                        // Add face to the person group person.
-                        foreach (var similarImage in personDictionary[groupedFace])
-                        {
-                            Console.WriteLine($"Add face to the person group person({groupedFace}) from image");
+                        Person person = await faceClient.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: worker.FullName);
+                        Console.WriteLine($"Create a person group person '{worker.FullName}'.");
 
-                            //using Stream imageFileStream = File.OpenRead($"{vocabularyPath}{similarImage}");
-                            await faceClient.PersonGroupPerson.AddFaceFromStreamAsync(
-                                personGroupId, person.PersonId, similarImage);
-                            //Нужен стрим картинки, бяка
-                        }
+                        // Add face to the person group person.
+                        Console.WriteLine($"Add face to the person group person({worker.FullName})");
+
+                        MemoryStream stream = new MemoryStream(worker.Avatar);
+
+                        var text = await faceClient.PersonGroupPerson.AddFaceFromStreamAsync(
+                            personGroupId, person.PersonId, stream);
                     }
 
                     // Start to train the person group.
