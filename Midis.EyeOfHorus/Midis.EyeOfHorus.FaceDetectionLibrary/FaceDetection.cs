@@ -37,7 +37,11 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             Console.WriteLine("Creating a Workers person groups");
             CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
             List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();
+
             ListForUpdatingWithGroupId listForUpdatingWithGroupId = new ListForUpdatingWithGroupId();
+            listForUpdatingWithGroupId.ListOfGroupId = new List<string>();
+            listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating = new List<List<WorkersForProcessing>>();
+            listForUpdatingWithGroupId.UpdateSource = new List<List<WorkersForProcessing>>();
 
             // Variable is needed for infinite loop
             bool enabledInfiniteLoop = true;
@@ -55,7 +59,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 {
                     foreach (FileInfo file in dir.GetFiles("*.jpeg"))
                     {
-                        Thread.Sleep((int)(20000));
+                        Thread.Sleep((int)(60000));
                         string _inputFilePath = inputFilePath + file.Name;
 
                         // load input image
@@ -86,7 +90,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                                     listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
                                                     listsAreEqual = false;
                                                 }                                                 
-                                                //break;
                                             }
                                             if (!listOfWorkerLists[j][i].Avatar.SequenceEqual(templistOfWorkerLists[j][i].Avatar))
                                             {
@@ -97,7 +100,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                                     listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
                                                     listsAreEqual = false;
                                                 }
-                                                //break;
                                             }
                                             if (listOfWorkerLists[j][i].ClientID != templistOfWorkerLists[j][i].ClientID)
                                             {
@@ -108,18 +110,23 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                                     listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
                                                     listsAreEqual = false;
                                                 }
-                                                //break;
                                             }
                                         }
                                     else
+                                    {
+                                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
+                                        listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
+                                        listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
                                         listsAreEqual = false;
+                                    }
+
                                 }
                             else
                                 listsAreEqual = false;
 
                             CheckIfPersonGroupsIsOutdated:
                             if (listsAreEqual)
-                            {
+                            {   //case when groups on tle API are equal to the lists from DB
                                 // Get ClientID and CameraID from XML
                                 (string, string) infoFromXML = GetInfoFromXML(file.Name, inputFilePath);
                                 for (int i = 0; i < listOfWorkerLists.Count(); i++)
@@ -132,22 +139,32 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                 }
                             }
                             else
-                            {
-                                if(listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
+                            {   //case when client count was equal but one or many clients have been changed
+                                if (listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
                                 {
                                     for(int i = 0; i < listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count(); i++)
-                                    {
-                                        //Tests are needed! maybe remove groups from other lists too
+                                    {                                       
                                         DeletePersonGroup(client, listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
                                         CreateAndTrainWorkersPersonGroup(client, listForUpdatingWithGroupId.UpdateSource[i], listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
-                                        listOfWorkerLists = templistOfWorkerLists;
-                                        listsAreEqual = true;
-                                        goto CheckIfPersonGroupsIsOutdated;
                                     }
+                                    listForUpdatingWithGroupId.UpdateSource.Clear();
+                                    listForUpdatingWithGroupId.ListOfGroupId.Clear();
+                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Clear();
+                                    listOfWorkerLists = templistOfWorkerLists;                       
+                                    listsAreEqual = true;
+                                    goto CheckIfPersonGroupsIsOutdated;
                                 }
                                 else
-                                {
+                                {   //case when client count wasn't equal
                                     DeletePersonGroups(client, listOfPersonGroupIdWithClientId).Wait();
+                                    listOfPersonGroupIdWithClientId.Clear();
+                                    foreach (var workerList in templistOfWorkerLists)
+                                    {
+                                        ClientIdAndPersonGroupId personGroupIdAndClientId = new ClientIdAndPersonGroupId();
+                                        personGroupIdAndClientId.PersonGroupId = Guid.NewGuid().ToString();
+                                        personGroupIdAndClientId.ClientId = workerList[0].ClientID;
+                                        listOfPersonGroupIdWithClientId.Add(personGroupIdAndClientId);
+                                    }
                                     CreateAndTrainWorkersPersonGroups(client, templistOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
                                     listOfWorkerLists = templistOfWorkerLists;
                                     listsAreEqual = true;
@@ -166,7 +183,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                     }
                 }
             }
-
+            //Person group creation for one Client
             static async Task CreateAndTrainWorkersPersonGroup(IFaceClient faceClient, List<WorkersForProcessing> listOfWorkersForProcessing, string personGroupId)
             {
                 // Create a person group. 
@@ -179,6 +196,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 await TrainPersonGroup(faceClient, personGroupId);
             }
 
+            //Person groups creation for all Clients
             static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<ClientIdAndPersonGroupId> personGroupIdListWithCLientId)
             {
                 if (!personGroupsExist)
