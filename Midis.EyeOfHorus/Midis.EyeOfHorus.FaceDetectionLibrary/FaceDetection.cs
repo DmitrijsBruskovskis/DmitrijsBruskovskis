@@ -23,19 +23,41 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         public static bool personGroupsExist = false;
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string databaseConnString)
         {
-            GetTheListOfPersonGroupsFromAPIAndDeleteThem(client);
-
+            List<Client> clientsInDB = GetClientListFromDB();
             List<List<WorkersForProcessing>> listOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
-            List<ClientIdAndPersonGroupId> listOfPersonGroupIdWithClientId = new List<ClientIdAndPersonGroupId>();
+
+            //GetTheListOfPersonGroupsFromAPIAndDeleteThem(client);
+        
+            List<Client> updatedClientList = new List<Client>();
             foreach (var workerList in listOfWorkerLists)
-            {
-                ClientIdAndPersonGroupId personGroupIdAndClientId = new ClientIdAndPersonGroupId();
-                personGroupIdAndClientId.PersonGroupId = Guid.NewGuid().ToString();
-                personGroupIdAndClientId.ClientId = workerList[0].ClientID;
-                listOfPersonGroupIdWithClientId.Add(personGroupIdAndClientId);
+            {  
+                Client newClient = new Client();
+                newClient.PersonGroupID = Guid.NewGuid().ToString();
+                newClient.ClientID = workerList[0].ClientID;          
+                updatedClientList.Add(newClient);
             }
-            Console.WriteLine("Creating a Workers person groups");
-            CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
+
+            List<Client> needToAddInDBClients = new List<Client>();
+            
+            if(clientsInDB.Count() > updatedClientList.Count())
+                for (int i = 0; i < clientsInDB.Count(); i++)
+                {
+                    if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
+                        needToAddInDBClients.Add(updatedClientList[i]);
+                }
+            else
+                for (int i = 0; i < updatedClientList.Count(); i++)
+                {
+                    if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
+                        needToAddInDBClients.Add(updatedClientList[i]);
+                }
+
+
+            //AddClientsFromListToDB(clients).Wait();
+
+
+            //Console.WriteLine("Creating a Workers person groups");
+            //CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, clientsInDB).Wait();
             List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();
 
             ListForUpdatingWithGroupId listForUpdatingWithGroupId = new ListForUpdatingWithGroupId();
@@ -119,14 +141,13 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                                         listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
                                         listsAreEqual = false;
                                     }
-
                                 }
                             else
                                 listsAreEqual = false;
 
                             CheckIfPersonGroupsIsOutdated:
                             if (listsAreEqual)
-                            {   //case when groups on tle API are equal to the lists from DB
+                            {   //case when groups on the API are equal to the lists from DB
                                 // Get ClientID and CameraID from XML
                                 (string, string) infoFromXML = GetInfoFromXML(file.Name, inputFilePath);
                                 for (int i = 0; i < listOfWorkerLists.Count(); i++)
@@ -197,20 +218,20 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             //Person groups creation for all Clients
-            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<ClientIdAndPersonGroupId> personGroupIdListWithCLientId)
+            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<Client> clients)
             {
                 if (!personGroupsExist)
                 {
                    // Create a person group. 
-                    for (int i = 0; i < personGroupIdListWithCLientId.Count(); i++)
+                    for (int i = 0; i < clients.Count(); i++)
                     {
-                        await CreatePersonGroup(faceClient, personGroupIdListWithCLientId[i].PersonGroupId);
+                        await CreatePersonGroup(faceClient, clients[i].PersonGroupID);
 
                         // The person group person creation.
-                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, personGroupIdListWithCLientId[i].PersonGroupId);
+                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, clients[i].PersonGroupID);
 
                         // Train Person group
-                        await TrainPersonGroup(faceClient, personGroupIdListWithCLientId[i].PersonGroupId);
+                        await TrainPersonGroup(faceClient, clients[i].PersonGroupID);
                     }
                     personGroupsExist = true;
                 }
@@ -437,7 +458,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             return (clientID, cameraID);
         }
 
-        static async Task AddDataFromResponseToDB(IList<InfoAboutImage> infoAboutImage, (String, String) infoFromXML, string fileName, string inputFilePath)
+        static async Task AddDataFromResponseToDB(IList<InfoAboutImage> infoAboutImage, (string, string) infoFromXML, string fileName, string inputFilePath)
         {
             // Listing each element from JSON response and transfer data to the database.
             Console.WriteLine("\nWork with database:\n");
@@ -466,6 +487,37 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 Console.WriteLine(fileName);
                 Console.WriteLine(infoAboutImage[i].FaceRectangle);
             }
+        }
+
+        static async Task AddClientsFromListToDB(IList<Client> clients)
+        { 
+            // Listing each element from Client list and transfer data to the database.
+            Console.WriteLine("\nAdding clients to DB\n");
+            for (int i = 0; i < clients.Count; i++)
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    Client newClient = new Client
+                    {
+                        ClientID = clients[i].ClientID,
+                        PersonGroupID = clients[i].PersonGroupID,
+                    };
+
+                    await db.AddAsync(newClient);
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+
+        static List<Client> GetClientListFromDB()
+        {
+            Console.WriteLine("\nGetting the list of Clients from DB\n");
+            List<Client> clients = new List<Client>();
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                clients = db.Clients.ToList();
+            }
+            return clients;
         }
 
         static async Task DeletePersonGroup(IFaceClient faceClient, string personGroupId)
