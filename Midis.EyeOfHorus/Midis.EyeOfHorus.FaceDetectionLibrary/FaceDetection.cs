@@ -1,6 +1,7 @@
 ﻿using DlibDotNet;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.EntityFrameworkCore;
 using Midis.EyeOfHorus.FaceDetectionLibrary.Models;
 using Newtonsoft.Json;
 using System;
@@ -23,41 +24,58 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         public static bool personGroupsExist = false;
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string databaseConnString)
         {
-            List<Client> clientsInDB = GetClientListFromDB();
+            GetTheListOfPersonGroupsFromAPIAndDeleteThem(client);
+
             List<List<WorkersForProcessing>> listOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
 
-            //GetTheListOfPersonGroupsFromAPIAndDeleteThem(client);
-        
-            List<Client> updatedClientList = new List<Client>();
+            DeleteClientsAndWorkersFromLocalDB();
+            List<Client> clientsInDB = GetClientListFromLocalDB();
+            List<DatabaseInfoAboutWorker> workersFromLocalDB = GetWorkersFromLocalDB();
+
+            //List<Client> updatedClientList = new List<Client>();
+            var listOfPersonGroupIdWithClientId = new List<ClientIdAndPersonGroupId>();
             foreach (var workerList in listOfWorkerLists)
-            {  
-                Client newClient = new Client();
-                newClient.PersonGroupID = Guid.NewGuid().ToString();
-                newClient.ClientID = workerList[0].ClientID;          
-                updatedClientList.Add(newClient);
+            {
+                //Client newClient = new Client();
+                //newClient.PersonGroupID = Guid.NewGuid().ToString();
+                //newClient.ClientID = workerList[0].ClientID;          
+                //updatedClientList.Add(newClient);
+
+                var clientIdAndPersonGroupId = new ClientIdAndPersonGroupId();
+                clientIdAndPersonGroupId.PersonGroupId = Guid.NewGuid().ToString();
+                clientIdAndPersonGroupId.ClientId = workerList[0].ClientID;
+                listOfPersonGroupIdWithClientId.Add(clientIdAndPersonGroupId);
+            }
+
+            //if (clientsInDB.Count() == 0)
+            //{
+            //    AddClientsToLocalDB(listOfWorkerLists).Wait();
+            //}
+
+            if (workersFromLocalDB.Count() == 0)
+            {
+                AddWorkersToLocalDB(listOfWorkerLists).Wait();
             }
 
             List<Client> needToAddInDBClients = new List<Client>();
-            
-            if(clientsInDB.Count() > updatedClientList.Count())
-                for (int i = 0; i < clientsInDB.Count(); i++)
-                {
-                    if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
-                        needToAddInDBClients.Add(updatedClientList[i]);
-                }
-            else
-                for (int i = 0; i < updatedClientList.Count(); i++)
-                {
-                    if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
-                        needToAddInDBClients.Add(updatedClientList[i]);
-                }
 
+            //if(clientsInDB.Count() > updatedClientList.Count())
+            //    for (int i = 0; i < clientsInDB.Count(); i++)
+            //    {
+            //        if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
+            //            needToAddInDBClients.Add(updatedClientList[i]);
+            //    }
+            //else
+            //    for (int i = 0; i < updatedClientList.Count(); i++)
+            //    {
+            //        if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
+            //            needToAddInDBClients.Add(updatedClientList[i]);
+            //    }
 
             //AddClientsFromListToDB(clients).Wait();
 
-
-            //Console.WriteLine("Creating a Workers person groups");
-            //CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, clientsInDB).Wait();
+            Console.WriteLine("Creating a Workers person groups");
+            CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
             List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();
 
             ListForUpdatingWithGroupId listForUpdatingWithGroupId = new ListForUpdatingWithGroupId();
@@ -218,20 +236,20 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             //Person groups creation for all Clients
-            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<Client> clients)
+            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<ClientIdAndPersonGroupId> clients)
             {
                 if (!personGroupsExist)
                 {
                    // Create a person group. 
                     for (int i = 0; i < clients.Count(); i++)
                     {
-                        await CreatePersonGroup(faceClient, clients[i].PersonGroupID);
+                        await CreatePersonGroup(faceClient, clients[i].PersonGroupId);
 
                         // The person group person creation.
-                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, clients[i].PersonGroupID);
+                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, clients[i].PersonGroupId);
 
                         // Train Person group
-                        await TrainPersonGroup(faceClient, clients[i].PersonGroupID);
+                        await TrainPersonGroup(faceClient, clients[i].PersonGroupId);
                     }
                     personGroupsExist = true;
                 }
@@ -489,10 +507,10 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
         }
 
-        static async Task AddClientsFromListToDB(IList<Client> clients)
+        static async Task AddClientsToLocalDB(List<Client> clients)
         { 
             // Listing each element from Client list and transfer data to the database.
-            Console.WriteLine("\nAdding clients to DB\n");
+            Console.WriteLine("\nAdding clients to local DB\n");
             for (int i = 0; i < clients.Count; i++)
             {
                 using (ApplicationContext db = new ApplicationContext())
@@ -509,7 +527,42 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
         }
 
-        static List<Client> GetClientListFromDB()
+        static async Task AddWorkersToLocalDB(List<List<WorkersForProcessing>> listOfWorkersLists)
+        {
+            // Listing each element from worker lists and transfer data to the database.
+            Console.WriteLine("\nAdding workers from Web to local DB\n");
+            for (int i = 0; i < listOfWorkersLists.Count; i++)
+            {
+                for(int j = 0; j< listOfWorkersLists[i].Count(); j++)
+                {
+                    using (ApplicationContext db = new ApplicationContext())
+                    {
+                        DatabaseInfoAboutWorker databaseInfoAboutWorker = new DatabaseInfoAboutWorker
+                        {
+                            FullName = listOfWorkersLists[i][j].FullName,
+                            ClientID = listOfWorkersLists[i][j].ClientID,
+                            Avatar = listOfWorkersLists[i][j].Avatar
+                        };
+
+                        await db.AddAsync(databaseInfoAboutWorker);
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
+        }
+
+        static List<DatabaseInfoAboutWorker> GetWorkersFromLocalDB()
+        {
+            Console.WriteLine("\nGetting worker list from local DB\n");
+            List<DatabaseInfoAboutWorker> workers = new List<DatabaseInfoAboutWorker>();
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                workers = db.WorkersInAPI.ToList();
+            }
+            return workers;
+        }
+
+        static List<Client> GetClientListFromLocalDB()
         {
             Console.WriteLine("\nGetting the list of Clients from DB\n");
             List<Client> clients = new List<Client>();
@@ -518,6 +571,17 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 clients = db.Clients.ToList();
             }
             return clients;
+        }
+
+        static void DeleteClientsAndWorkersFromLocalDB()
+        {
+            Console.WriteLine("Deleting Clients and Workers from local DB");
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                db.Database.ExecuteSqlRaw("TRUNCATE TABLE [WorkersInAPI]");
+                db.Database.ExecuteSqlRaw("TRUNCATE TABLE [Clients]");
+            } 
+            Console.WriteLine();
         }
 
         static async Task DeletePersonGroup(IFaceClient faceClient, string personGroupId)

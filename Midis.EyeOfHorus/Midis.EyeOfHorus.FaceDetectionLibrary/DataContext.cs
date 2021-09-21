@@ -6,7 +6,9 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
     public class ApplicationContext : DbContext
     {
         public DbSet<DatabaseInfoAboutFace> InfoAboutFaces { get; set; }
+        public DbSet<DatabaseInfoAboutWorker> WorkersInAPI { get; set; }
         public DbSet<Client> Clients { get; set; }
+
 
         public ApplicationContext()
         {
