@@ -24,64 +24,151 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
         public static bool personGroupsExist = false;
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string databaseConnString)
         {
-            GetTheListOfPersonGroupsFromAPIAndDeleteThem(client);
+            //GetTheListOfPersonGroupsFromAPIAndDeleteThem(client); //temporarily
 
+            // Getting workers from web and from local db
             List<List<WorkersForProcessing>> listOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
-
-            DeleteClientsAndWorkersFromLocalDB();
             List<Client> clientsInDB = GetClientListFromLocalDB();
             List<DatabaseInfoAboutWorker> workersFromLocalDB = GetWorkersFromLocalDB();
 
-            //List<Client> updatedClientList = new List<Client>();
-            var listOfPersonGroupIdWithClientId = new List<ClientIdAndPersonGroupId>();
-            foreach (var workerList in listOfWorkerLists)
-            {
-                //Client newClient = new Client();
-                //newClient.PersonGroupID = Guid.NewGuid().ToString();
-                //newClient.ClientID = workerList[0].ClientID;          
-                //updatedClientList.Add(newClient);
+            // Change workersFromLocalDB format from List<DatabaseInfoAboutWorker> to List<List<WorkersForProcessing>>
+            List<List<WorkersForProcessing>> listOfWorkerListsFromLocalDB = GroupUpWorkersFromLocalDBInDifferentListsDividedByClientID(workersFromLocalDB);
 
-                var clientIdAndPersonGroupId = new ClientIdAndPersonGroupId();
-                clientIdAndPersonGroupId.PersonGroupId = Guid.NewGuid().ToString();
-                clientIdAndPersonGroupId.ClientId = workerList[0].ClientID;
-                listOfPersonGroupIdWithClientId.Add(clientIdAndPersonGroupId);
-            }
-
-            //if (clientsInDB.Count() == 0)
-            //{
-            //    AddClientsToLocalDB(listOfWorkerLists).Wait();
-            //}
-
-            if (workersFromLocalDB.Count() == 0)
-            {
-                AddWorkersToLocalDB(listOfWorkerLists).Wait();
-            }
-
-            List<Client> needToAddInDBClients = new List<Client>();
-
-            //if(clientsInDB.Count() > updatedClientList.Count())
-            //    for (int i = 0; i < clientsInDB.Count(); i++)
-            //    {
-            //        if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
-            //            needToAddInDBClients.Add(updatedClientList[i]);
-            //    }
-            //else
-            //    for (int i = 0; i < updatedClientList.Count(); i++)
-            //    {
-            //        if (clientsInDB[i].ClientID != updatedClientList[i].ClientID)
-            //            needToAddInDBClients.Add(updatedClientList[i]);
-            //    }
-
-            //AddClientsFromListToDB(clients).Wait();
-
-            Console.WriteLine("Creating a Workers person groups");
-            CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
-            List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();
-
+            // Prepare List, which will help update list or lists in API
             ListForUpdatingWithGroupId listForUpdatingWithGroupId = new ListForUpdatingWithGroupId();
             listForUpdatingWithGroupId.ListOfGroupId = new List<string>();
             listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating = new List<List<WorkersForProcessing>>();
             listForUpdatingWithGroupId.UpdateSource = new List<List<WorkersForProcessing>>();
+            bool listsAreEqual = true;
+            Client clientForUpdate = new Client();
+
+            List<Client> listWithClientsFromWEB = new List<Client>();
+            foreach (var workerList in listOfWorkerLists)
+            {
+                Client newClient = new Client();
+                newClient.PersonGroupID = Guid.NewGuid().ToString();
+                newClient.ClientID = workerList[0].ClientID;
+                listWithClientsFromWEB.Add(newClient);
+            }
+
+            // Check if local DB have old Clients, and if it does,
+            // then thansfer PersonGroupID(API) to the Clients in the new list
+            if((listWithClientsFromWEB.Count() != 0) && (clientsInDB.Count() != 0))
+            {
+                if(listWithClientsFromWEB.Count() >= clientsInDB.Count())
+                    for(int i = 0; i < listWithClientsFromWEB.Count(); i++)
+                    {
+                        if(listWithClientsFromWEB[i].ClientID == clientsInDB[i].ClientID)
+                        {
+                            listWithClientsFromWEB[i].PersonGroupID = clientsInDB[i].PersonGroupID;
+                        }
+                    }
+                else
+                    for (int i = 0; i < clientsInDB.Count(); i++)
+                    {
+                        if (listWithClientsFromWEB[i].ClientID == clientsInDB[i].ClientID)
+                        {
+                            listWithClientsFromWEB[i].PersonGroupID = clientsInDB[i].PersonGroupID;
+                        }
+                    }
+            }
+
+            // Check if worker lists from WEB(aka Clients) and from local DB(aka API) are equal
+            if (listOfWorkerLists.Count() == listOfWorkerListsFromLocalDB.Count())
+                for (int j = 0; j < listOfWorkerLists.Count(); j++)
+                {
+                    if (listOfWorkerLists[j].Count() == listOfWorkerListsFromLocalDB[j].Count())
+                        for (int i = 0; i < listOfWorkerLists[j].Count(); i++)
+                        {
+                            if (listOfWorkerLists[j][i].FullName != listOfWorkerListsFromLocalDB[j][i].FullName)
+                            {
+                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerListsFromLocalDB[j]))
+                                {
+                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerListsFromLocalDB[j]);
+                                    listForUpdatingWithGroupId.UpdateSource.Add(listOfWorkerLists[j]);
+                                    clientForUpdate = clientsInDB.FirstOrDefault(x => x.ClientID == listOfWorkerListsFromLocalDB[j][0].ClientID);
+                                    listForUpdatingWithGroupId.ListOfGroupId.Add(clientForUpdate.PersonGroupID);
+                                    listsAreEqual = false;
+                                }
+                            }
+                            if (!listOfWorkerLists[j][i].Avatar.SequenceEqual(listOfWorkerListsFromLocalDB[j][i].Avatar))
+                            {
+                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerListsFromLocalDB[j]))
+                                {
+                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerListsFromLocalDB[j]);
+                                    listForUpdatingWithGroupId.UpdateSource.Add(listOfWorkerLists[j]);
+                                    clientForUpdate = clientsInDB.FirstOrDefault(x => x.ClientID == listOfWorkerListsFromLocalDB[j][0].ClientID);
+                                    listForUpdatingWithGroupId.ListOfGroupId.Add(clientForUpdate.PersonGroupID);
+                                    listsAreEqual = false;
+                                }
+                            }
+                            if (listOfWorkerLists[j][i].ClientID != listOfWorkerListsFromLocalDB[j][i].ClientID)
+                            {
+                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerListsFromLocalDB[j]))
+                                {
+                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerListsFromLocalDB[j]);
+                                    listForUpdatingWithGroupId.UpdateSource.Add(listOfWorkerLists[j]);
+                                    clientForUpdate = clientsInDB.FirstOrDefault(x => x.ClientID == listOfWorkerListsFromLocalDB[j][0].ClientID);
+                                    listForUpdatingWithGroupId.ListOfGroupId.Add(clientForUpdate.PersonGroupID);
+                                    listsAreEqual = false;
+                                }
+                            }
+                        }
+                    else
+                    {
+                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerListsFromLocalDB[j]);
+                        listForUpdatingWithGroupId.UpdateSource.Add(listOfWorkerLists[j]);
+                        clientForUpdate = clientsInDB.FirstOrDefault(x => x.ClientID == listOfWorkerListsFromLocalDB[j][0].ClientID);
+                        listForUpdatingWithGroupId.ListOfGroupId.Add(clientForUpdate.PersonGroupID);
+                        listsAreEqual = false;
+                    }
+                }
+            else
+                listsAreEqual = false;
+
+            if (listsAreEqual)
+            {   //case when groups on the API are equal to the lists from WEB
+                    goto BeginningOfInfiniteLoop;
+            }
+            else
+            {   //case when client count was equal but one or many clients have been changed in
+                //WEB and needs to change them in the local DB(aka API)
+                if (listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
+                {
+                    for (int i = 0; i < listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count(); i++)
+                    {                       
+                        DeletePersonGroup(client, listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
+                        CreateAndTrainWorkersPersonGroup(client, listForUpdatingWithGroupId.UpdateSource[i], listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
+
+                    }
+                    listForUpdatingWithGroupId.UpdateSource.Clear();
+                    listForUpdatingWithGroupId.ListOfGroupId.Clear();
+                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Clear();
+                    listOfWorkerListsFromLocalDB = listOfWorkerLists;
+                    clientsInDB = listWithClientsFromWEB;
+                    DeleteClientsAndWorkersFromLocalDB();
+                    AddClientsToLocalDB(listWithClientsFromWEB).Wait();
+                    AddWorkersToLocalDB(listOfWorkerLists).Wait();
+                    listsAreEqual = true;
+                }
+                else
+                {   //case when client count wasn't equal
+                    DeletePersonGroups(client, listWithClientsFromWEB).Wait();
+                    CreateAndTrainWorkersPersonGroups(client, listOfWorkerLists, listWithClientsFromWEB).Wait();
+
+                    listOfWorkerListsFromLocalDB = listOfWorkerLists;
+                    clientsInDB = listWithClientsFromWEB;
+                    DeleteClientsAndWorkersFromLocalDB();
+                    AddClientsToLocalDB(listWithClientsFromWEB).Wait();
+                    AddWorkersToLocalDB(listOfWorkerLists).Wait();
+                    listsAreEqual = true;
+                }
+            }
+
+            //todo! From here wasn't changed the code
+            //Here ends part, which check Local DB and WEB DB and update Local DB And API if needed
+            BeginningOfInfiniteLoop:
+            List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();
 
             // Variable is needed for infinite loop
             bool enabledInfiniteLoop = true;
@@ -89,139 +176,139 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             // Infinite loop, which search for new images in the target folder and if search is succesfull,
             // then use the local library to find the faces in the image. If faces are founded, then starting work with
             // Microsot Azure API to identify faces and save results to the database.
-            while (enabledInfiniteLoop)
-            {
-                Thread.Sleep((int)(3000));
-                DirectoryInfo dir = new DirectoryInfo(inputFilePath);
+            //while (enabledInfiniteLoop)
+            //{
+            //    Thread.Sleep((int)(3000));
+            //    DirectoryInfo dir = new DirectoryInfo(inputFilePath);
 
-                // Dlib library using for local face search
-                using (var fd = Dlib.GetFrontalFaceDetector())
-                {
-                    foreach (FileInfo file in dir.GetFiles("*.jpeg"))
-                    {
-                        Thread.Sleep((int)(60000));
-                        string _inputFilePath = inputFilePath + file.Name;
+            //    // Dlib library using for local face search
+            //    using (var fd = Dlib.GetFrontalFaceDetector())
+            //    {
+            //        foreach (FileInfo file in dir.GetFiles("*.jpeg"))
+            //        {
+            //            Thread.Sleep((int)(60000));
+            //            string _inputFilePath = inputFilePath + file.Name;
 
-                        // load input image
-                        Array2D<RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
+            //            // load input image
+            //            Array2D<RgbPixel> img = Dlib.LoadImage<RgbPixel>(_inputFilePath);
 
-                        // find all faces in the image
-                        Rectangle[] faces = fd.Operator(img);
-                        // if search was succesfull then starting work with Microsoft Azure API
-                        if (faces.Length != 0)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("Picture " + file.Name + " have faces(according to the DlibDotNetNative library), sending data to Microsoft Azure API");
-                            templistOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
-                            bool listsAreEqual = true;                          
+            //            // find all faces in the image
+            //            Rectangle[] faces = fd.Operator(img);
+            //            // if search was succesfull then starting work with Microsoft Azure API
+            //            if (faces.Length != 0)
+            //            {
+            //                Console.WriteLine();
+            //                Console.WriteLine("Picture " + file.Name + " have faces(according to the DlibDotNetNative library), sending data to Microsoft Azure API");
+            //                templistOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
+            //                listsAreEqual = true;                          
 
-                            if (listOfWorkerLists.Count() == templistOfWorkerLists.Count())
-                                for (int j = 0; j < listOfWorkerLists.Count(); j++)
-                                {
-                                    if(listOfWorkerLists[j].Count() == templistOfWorkerLists[j].Count())
-                                        for (int i = 0; i < listOfWorkerLists[j].Count(); i++)
-                                        {
-                                            if (listOfWorkerLists[j][i].FullName != templistOfWorkerLists[j][i].FullName)
-                                            {
-                                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
-                                                {
-                                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
-                                                    listsAreEqual = false;
-                                                }                                                 
-                                            }
-                                            if (!listOfWorkerLists[j][i].Avatar.SequenceEqual(templistOfWorkerLists[j][i].Avatar))
-                                            {
-                                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
-                                                {
-                                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
-                                                    listsAreEqual = false;
-                                                }
-                                            }
-                                            if (listOfWorkerLists[j][i].ClientID != templistOfWorkerLists[j][i].ClientID)
-                                            {
-                                                if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
-                                                {
-                                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
-                                                    listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
-                                                    listsAreEqual = false;
-                                                }
-                                            }
-                                        }
-                                    else
-                                    {
-                                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
-                                        listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
-                                        listForUpdatingWithGroupId.ListOfGroupId.Add(listOfPersonGroupIdWithClientId[j].PersonGroupId);
-                                        listsAreEqual = false;
-                                    }
-                                }
-                            else
-                                listsAreEqual = false;
+            //                if (listOfWorkerLists.Count() == templistOfWorkerLists.Count())
+            //                    for (int j = 0; j < listOfWorkerLists.Count(); j++)
+            //                    {
+            //                        if(listOfWorkerLists[j].Count() == templistOfWorkerLists[j].Count())
+            //                            for (int i = 0; i < listOfWorkerLists[j].Count(); i++)
+            //                            {
+            //                                if (listOfWorkerLists[j][i].FullName != templistOfWorkerLists[j][i].FullName)
+            //                                {
+            //                                    if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
+            //                                    {
+            //                                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.ListOfGroupId.Add(listWithClientsFromWEB[j].PersonGroupID);
+            //                                        listsAreEqual = false;
+            //                                    }                                                 
+            //                                }
+            //                                if (!listOfWorkerLists[j][i].Avatar.SequenceEqual(templistOfWorkerLists[j][i].Avatar))
+            //                                {
+            //                                    if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
+            //                                    {
+            //                                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.ListOfGroupId.Add(listWithClientsFromWEB[j].PersonGroupID);
+            //                                        listsAreEqual = false;
+            //                                    }
+            //                                }
+            //                                if (listOfWorkerLists[j][i].ClientID != templistOfWorkerLists[j][i].ClientID)
+            //                                {
+            //                                    if (!listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Contains(listOfWorkerLists[j]))
+            //                                    {
+            //                                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
+            //                                        listForUpdatingWithGroupId.ListOfGroupId.Add(listWithClientsFromWEB[j].PersonGroupID);
+            //                                        listsAreEqual = false;
+            //                                    }
+            //                                }
+            //                            }
+            //                        else
+            //                        {
+            //                            listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Add(listOfWorkerLists[j]);
+            //                            listForUpdatingWithGroupId.UpdateSource.Add(templistOfWorkerLists[j]);
+            //                            listForUpdatingWithGroupId.ListOfGroupId.Add(listWithClientsFromWEB[j].PersonGroupID);
+            //                            listsAreEqual = false;
+            //                        }
+            //                    }
+            //                else
+            //                    listsAreEqual = false;
 
-                            CheckIfPersonGroupsIsOutdated:
-                            if (listsAreEqual)
-                            {   //case when groups on the API are equal to the lists from DB
-                                // Get ClientID and CameraID from XML
-                                (string, string) infoFromXML = GetInfoFromXML(file.Name, inputFilePath);
-                                for (int i = 0; i < listOfWorkerLists.Count(); i++)
-                                {
-                                    if (listOfWorkerLists[i][0].ClientID == infoFromXML.Item1)
-                                    {
-                                        FindFacesWithAPIIdentifyThemAndAddInDB(_inputFilePath, subscriptionKey, uriBase, file.Name, client, inputFilePath, listOfPersonGroupIdWithClientId[i].PersonGroupId).Wait();
-                                        file.Delete();
-                                    }
-                                }
-                            }
-                            else
-                            {   //case when client count was equal but one or many clients have been changed
-                                if (listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
-                                {
-                                    for(int i = 0; i < listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count(); i++)
-                                    {                                       
-                                        DeletePersonGroup(client, listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
-                                        CreateAndTrainWorkersPersonGroup(client, listForUpdatingWithGroupId.UpdateSource[i], listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
-                                    }
-                                    listForUpdatingWithGroupId.UpdateSource.Clear();
-                                    listForUpdatingWithGroupId.ListOfGroupId.Clear();
-                                    listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Clear();
-                                    listOfWorkerLists = templistOfWorkerLists;                       
-                                    listsAreEqual = true;
-                                    goto CheckIfPersonGroupsIsOutdated;
-                                }
-                                else
-                                {   //case when client count wasn't equal
-                                    DeletePersonGroups(client, listOfPersonGroupIdWithClientId).Wait();
-                                    listOfPersonGroupIdWithClientId.Clear();
-                                    foreach (var workerList in templistOfWorkerLists)
-                                    {
-                                        ClientIdAndPersonGroupId personGroupIdAndClientId = new ClientIdAndPersonGroupId();
-                                        personGroupIdAndClientId.PersonGroupId = Guid.NewGuid().ToString();
-                                        personGroupIdAndClientId.ClientId = workerList[0].ClientID;
-                                        listOfPersonGroupIdWithClientId.Add(personGroupIdAndClientId);
-                                    }
-                                    CreateAndTrainWorkersPersonGroups(client, templistOfWorkerLists, listOfPersonGroupIdWithClientId).Wait();
-                                    listOfWorkerLists = templistOfWorkerLists;
-                                    listsAreEqual = true;
-                                    goto CheckIfPersonGroupsIsOutdated;
-                                }
-                            }
-                        }
-                        else
-                            file.Delete();
+            //                CheckIfPersonGroupsIsOutdated:
+            //                if (listsAreEqual)
+            //                {   //case when groups on the API are equal to the lists from DB
+            //                    // Get ClientID and CameraID from XML
+            //                    (string, string) infoFromXML = GetInfoFromXML(file.Name, inputFilePath);
+            //                    for (int i = 0; i < listOfWorkerLists.Count(); i++)
+            //                    {
+            //                        if (listOfWorkerLists[i][0].ClientID == infoFromXML.Item1)
+            //                        {
+            //                            FindFacesWithAPIIdentifyThemAndAddInDB(_inputFilePath, subscriptionKey, uriBase, file.Name, client, inputFilePath, listWithClientsFromWEB[i].PersonGroupID).Wait();
+            //                            file.Delete();
+            //                        }
+            //                    }
+            //                }
+            //                else
+            //                {   //case when client count was equal but one or many clients have been changed
+            //                    if (listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
+            //                    {
+            //                        for(int i = 0; i < listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count(); i++)
+            //                        {                                       
+            //                            DeletePersonGroup(client, listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
+            //                            CreateAndTrainWorkersPersonGroup(client, listForUpdatingWithGroupId.UpdateSource[i], listForUpdatingWithGroupId.ListOfGroupId[i]).Wait();
+            //                        }
+            //                        listForUpdatingWithGroupId.UpdateSource.Clear();
+            //                        listForUpdatingWithGroupId.ListOfGroupId.Clear();
+            //                        listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Clear();
+            //                        listOfWorkerLists = templistOfWorkerLists;                       
+            //                        listsAreEqual = true;
+            //                        goto CheckIfPersonGroupsIsOutdated;
+            //                    }
+            //                    else
+            //                    {   //case when client count wasn't equal
+            //                        DeletePersonGroups(client, listWithClientsFromWEB).Wait();
+            //                        listWithClientsFromWEB.Clear();
+            //                        foreach (var workerList in templistOfWorkerLists)
+            //                        {
+            //                            Client newClient = new Client();
+            //                            newClient.PersonGroupID = Guid.NewGuid().ToString();
+            //                            newClient.ClientID = workerList[0].ClientID;
+            //                            listWithClientsFromWEB.Add(newClient);
+            //                        }
+            //                        CreateAndTrainWorkersPersonGroups(client, templistOfWorkerLists, listWithClientsFromWEB).Wait();
+            //                        listOfWorkerLists = templistOfWorkerLists;
+            //                        listsAreEqual = true;
+            //                        goto CheckIfPersonGroupsIsOutdated;
+            //                    }
+            //                }
+            //            }
+            //            else
+            //                file.Delete();
 
-                        // After all work is done delete XML file with info about image set, received from client 
-                        string xmlName = file.Name.Substring(0, file.Name.LastIndexOf('_')) + ".xml";
-                        if (dir.GetFiles(file.Name.Substring(0, file.Name.LastIndexOf('_')) + "*.jpeg").Length <= 0)
-                            foreach (FileInfo xmlFile in dir.GetFiles(xmlName))
-                                xmlFile.Delete();
-                    }
-                }
-            }
+            //            // After all work is done delete XML file with info about image set, received from client 
+            //            string xmlName = file.Name.Substring(0, file.Name.LastIndexOf('_')) + ".xml";
+            //            if (dir.GetFiles(file.Name.Substring(0, file.Name.LastIndexOf('_')) + "*.jpeg").Length <= 0)
+            //                foreach (FileInfo xmlFile in dir.GetFiles(xmlName))
+            //                    xmlFile.Delete();
+            //        }
+            //    }
+            //}
             //Person group creation for one Client
             static async Task CreateAndTrainWorkersPersonGroup(IFaceClient faceClient, List<WorkersForProcessing> listOfWorkersForProcessing, string personGroupId)
             {
@@ -236,20 +323,20 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
 
             //Person groups creation for all Clients
-            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<ClientIdAndPersonGroupId> clients)
+            static async Task CreateAndTrainWorkersPersonGroups(IFaceClient faceClient, List<List<WorkersForProcessing>> listOfWorkersListsForProcessing, List<Client> clients)
             {
                 if (!personGroupsExist)
                 {
                    // Create a person group. 
                     for (int i = 0; i < clients.Count(); i++)
                     {
-                        await CreatePersonGroup(faceClient, clients[i].PersonGroupId);
+                        await CreatePersonGroup(faceClient, clients[i].PersonGroupID);
 
                         // The person group person creation.
-                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, clients[i].PersonGroupId);
+                        await CreatePersonsWithFacesInPersonGroup(listOfWorkersListsForProcessing[i], faceClient, clients[i].PersonGroupID);
 
                         // Train Person group
-                        await TrainPersonGroup(faceClient, clients[i].PersonGroupId);
+                        await TrainPersonGroup(faceClient, clients[i].PersonGroupID);
                     }
                     personGroupsExist = true;
                 }
@@ -321,6 +408,44 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
 
                 return infoAboutImage;
             }
+        }
+
+        static List<List<WorkersForProcessing>> GroupUpWorkersFromLocalDBInDifferentListsDividedByClientID(List<DatabaseInfoAboutWorker> workersFromLocalDB)
+        {
+            // Change workersFromLocalDB format from List<> to List<List<>>
+            var allWorkerListForProcessing = new List<WorkersForProcessing>();
+            for (int i = 0; i < workersFromLocalDB.Count; i++)
+            {
+                var workerForProcessing = new WorkersForProcessing();
+                workerForProcessing.FullName = workersFromLocalDB[i].FullName;
+                workerForProcessing.Avatar = workersFromLocalDB[i].Avatar;
+                workerForProcessing.ClientID = workersFromLocalDB[i].ClientID;
+                allWorkerListForProcessing.Add(workerForProcessing);
+            }
+
+            List<string> listWithClientIDs = new List<string>();
+            foreach (WorkersForProcessing worker in allWorkerListForProcessing)
+            {
+                if (!listWithClientIDs.Contains(worker.ClientID))
+                {
+                    listWithClientIDs.Add(worker.ClientID);
+                }
+            }
+
+            var listOfWorkersListsByClientID = new List<List<WorkersForProcessing>>();
+            foreach (string clientID in listWithClientIDs)
+            {
+                List<WorkersForProcessing> listWithClientID = new List<WorkersForProcessing>();
+                foreach (WorkersForProcessing worker in allWorkerListForProcessing)
+                {
+                    if (worker.ClientID == clientID)
+                    {
+                        listWithClientID.Add(worker);
+                    }
+                }
+                listOfWorkersListsByClientID.Add(listWithClientID);
+            }
+            return listOfWorkersListsByClientID;
         }
 
         static List<List<WorkersForProcessing>> GetWorkersFromWebApplicationInDifferentListsDividedByClientID(string databaseConnString)
@@ -578,8 +703,8 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             Console.WriteLine("Deleting Clients and Workers from local DB");
             using (ApplicationContext db = new ApplicationContext())
             {
-                db.Database.ExecuteSqlRaw("TRUNCATE TABLE [WorkersInAPI]");
-                db.Database.ExecuteSqlRaw("TRUNCATE TABLE [Clients]");
+                db.Database.ExecuteSqlRaw("TRUNCATE \"WorkersInAPI\"");
+                db.Database.ExecuteSqlRaw("TRUNCATE \"Clients\"");
             } 
             Console.WriteLine();
         }
@@ -591,14 +716,14 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             Console.WriteLine();
         }
 
-        static async Task DeletePersonGroups(IFaceClient faceClient, List<ClientIdAndPersonGroupId> listOfPersonGroupIdWithClientId)
+        static async Task DeletePersonGroups(IFaceClient faceClient, List<Client> listOfClients)
         {
             if (personGroupsExist)
             {
-                foreach (var personGroupIdwithClientId in listOfPersonGroupIdWithClientId)
+                foreach (var client in listOfClients)
                 {
-                    Console.WriteLine("Person group "+ personGroupIdwithClientId.PersonGroupId + " deletion");
-                    await faceClient.PersonGroup.DeleteAsync(personGroupIdwithClientId.PersonGroupId);
+                    Console.WriteLine("Person group "+ client.PersonGroupID + " deletion");
+                    await faceClient.PersonGroup.DeleteAsync(client.PersonGroupID);
                 }
                 Console.WriteLine();
                 personGroupsExist = false;
