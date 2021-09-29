@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.FaceDetect
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.Server.Console", "Midis.EyeOfHorus.Server.Consol\Midis.EyeOfHorus.Server.Console.csproj", "{B66D5D91-EDBA-49C8-8A38-F8281A2B50B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.TestProject", "Midis.EyeOfHorus.TestProject\Midis.EyeOfHorus.TestProject.csproj", "{BF8C45EE-6618-4884-82D5-31985028046A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Midis.EyeOfHorus.ClientLibrary", "Midis.EyeOfHorus.ClientLibrary\Midis.EyeOfHorus.ClientLibrary.csproj", "{C10F792F-C50F-40DF-B342-EF45958F4FA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Midis.EyeOfHorus.VideoDivisionService", "Midis.EyeOfHorus.VideoDivisionService\Midis.EyeOfHorus.VideoDivisionService.csproj", "{80068AD3-7516-464F-A53B-D3748FB97EC2}"
@@ -49,14 +47,6 @@ Global
 		{B66D5D91-EDBA-49C8-8A38-F8281A2B50B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B66D5D91-EDBA-49C8-8A38-F8281A2B50B9}.Release|x64.ActiveCfg = Release|Any CPU
 		{B66D5D91-EDBA-49C8-8A38-F8281A2B50B9}.Release|x64.Build.0 = Release|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Debug|x64.Build.0 = Debug|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Release|x64.ActiveCfg = Release|Any CPU
-		{BF8C45EE-6618-4884-82D5-31985028046A}.Release|x64.Build.0 = Release|Any CPU
 		{C10F792F-C50F-40DF-B342-EF45958F4FA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C10F792F-C50F-40DF-B342-EF45958F4FA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C10F792F-C50F-40DF-B342-EF45958F4FA1}.Debug|x64.ActiveCfg = Debug|Any CPU

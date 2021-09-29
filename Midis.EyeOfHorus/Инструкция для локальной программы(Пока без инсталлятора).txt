@@ -5,5 +5,5 @@
     InstallUtil.exe C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.VideoDivisionService\bin\Debug\VideoDivisionService.exe
     (Для переустановки - sc delete VideoDivisionService)
 }
-3)Если не отключить в сервисе попытку пересылки файлов на сервер, то будет ошибка, так как сервер пока что только локальный
-4)Возможно еще что-то, пока в процессе проверки
+3) Если не отключить в сервисе попытку пересылки файлов на сервер, то будет ошибка, так как сервер пока что только локальный
+4) Описание создания локального FTP сервера - https://www.windowscentral.com/how-set-and-manage-ftp-server-windows-10

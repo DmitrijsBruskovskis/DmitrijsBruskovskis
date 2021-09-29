@@ -138,10 +138,10 @@ namespace VideoDivisionRestarter
                         foreach (FileInfo informationFile in resultDir.GetFiles("*.xml"))
                         {
                             string informationFileNameWithoutExtension = Path.GetFileNameWithoutExtension(informationFile.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + informationFileNameWithoutExtension + ".xml");
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.197/Images/" + informationFileNameWithoutExtension + ".xml");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
-                            request.Credentials = new NetworkCredential("Midis0215", "Midis0215");
+                            request.Credentials = new NetworkCredential("Midis", "");
 
                             FileStream fs = new FileStream(informationFile.FullName, FileMode.Open);
 
@@ -163,10 +163,10 @@ namespace VideoDivisionRestarter
                         foreach (FileInfo image in resultDir.GetFiles("*.jpeg"))
                         {
                             string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.88/Images/" + imageNameWithoutExtension + ".jpeg");
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.197/Images/" + imageNameWithoutExtension + ".jpeg");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
-                            request.Credentials = new NetworkCredential("Midis0215", "Midis0215");
+                            request.Credentials = new NetworkCredential("Midis", "");
 
                             FileStream fs = new FileStream(image.FullName, FileMode.Open);
                             
