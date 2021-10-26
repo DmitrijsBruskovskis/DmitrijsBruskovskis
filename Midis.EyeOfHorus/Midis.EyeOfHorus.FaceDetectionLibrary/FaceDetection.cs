@@ -183,7 +183,6 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
                 }
             }
 
-            //todo! From here wasn't changed the code
             //Here ends part, which check Local DB and WEB DB and update Local DB And API if needed
             BeginningOfInfiniteLoop:
             List<List<WorkersForProcessing>> templistOfWorkerLists = new List<List<WorkersForProcessing>>();

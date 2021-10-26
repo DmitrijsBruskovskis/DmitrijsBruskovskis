@@ -6,12 +6,12 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Configuration;
-using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
@@ -138,10 +138,10 @@ namespace VideoDivisionRestarter
                         foreach (FileInfo informationFile in resultDir.GetFiles("*.xml"))
                         {
                             string informationFileNameWithoutExtension = Path.GetFileNameWithoutExtension(informationFile.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.197/Images/" + informationFileNameWithoutExtension + ".xml");
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.51/Images/" + informationFileNameWithoutExtension + ".xml");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
-                            request.Credentials = new NetworkCredential("Midis", "");
+                            request.Credentials = new NetworkCredential("MozisLV", "Lamer1969");
 
                             FileStream fs = new FileStream(informationFile.FullName, FileMode.Open);
 
@@ -163,10 +163,10 @@ namespace VideoDivisionRestarter
                         foreach (FileInfo image in resultDir.GetFiles("*.jpeg"))
                         {
                             string imageNameWithoutExtension = Path.GetFileNameWithoutExtension(image.FullName);
-                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.197/Images/" + imageNameWithoutExtension + ".jpeg");
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://192.168.1.51/Images/" + imageNameWithoutExtension + ".jpeg");
                             request.UseBinary = true;
                             request.Method = WebRequestMethods.Ftp.UploadFile;
-                            request.Credentials = new NetworkCredential("Midis", "");
+                            request.Credentials = new NetworkCredential("MozisLV", "Lamer1969");
 
                             FileStream fs = new FileStream(image.FullName, FileMode.Open);
                             
