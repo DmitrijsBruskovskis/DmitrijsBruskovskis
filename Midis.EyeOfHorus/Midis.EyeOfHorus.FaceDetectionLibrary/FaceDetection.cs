@@ -23,7 +23,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
     {
         public static void DetectFacesAsync(string inputFilePath, string subscriptionKey, string uriBase, IFaceClient client, string databaseConnString)
         {
-            //GetTheListOfPersonGroupsFromAPIA ndDeleteThem(client); //temporarily
+            //GetTheListOfPersonGroupsFromAPIAndDeleteThem(client); //temporarily
 
             // Getting workers from web and from local db
             List<List<WorkersForProcessing>> listOfWorkerLists = GetWorkersFromWebApplicationInDifferentListsDividedByClientID(databaseConnString);
