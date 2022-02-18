@@ -132,9 +132,16 @@ namespace VideoDivisionRestarter
                         xdoc.Add(information);
                         xdoc.Save(resultAbsolutePath + fileNameWithoutExtension + ".xml");
 
-                        File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
+                        //Check if video with same name already exist and delete it.
+                        if (File.Exists(afterDivisionAbsolutePath + file.Name))
+                        {
+                            File.Delete(afterDivisionAbsolutePath + file.Name);
+                            File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
+                        }
+                        else
+                            File.Move(file.FullName, afterDivisionAbsolutePath + file.Name);
 
-                        //Comment from here to prevent errors while testing not on the work PC
+                        //Comment from here to prevent errors while testing without working FTP server.
                         foreach (FileInfo informationFile in resultDir.GetFiles("*.xml"))
                         {
                             string informationFileNameWithoutExtension = Path.GetFileNameWithoutExtension(informationFile.FullName);

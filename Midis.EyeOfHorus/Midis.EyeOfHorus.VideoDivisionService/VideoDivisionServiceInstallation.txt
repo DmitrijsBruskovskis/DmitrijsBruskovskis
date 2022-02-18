@@ -1,3 +1,4 @@
 cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
 InstallUtil.exe C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.VideoDivisionService\bin\Debug\VideoDivisionService.exe
+InstallUtil.exe C:\Projects\Midis.EyeOfHorus\Midis.EyeOfHorus.VideoDivisionService\bin\Debug\VideoDivisionService.exe
 sc delete VideoDivisionService
