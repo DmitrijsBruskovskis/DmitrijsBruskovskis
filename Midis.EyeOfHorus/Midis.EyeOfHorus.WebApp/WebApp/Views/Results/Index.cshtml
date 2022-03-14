@@ -9,13 +9,13 @@
             <form method="get">
                 <div class="form-inline form-group">
                     <label class="control-label" style="padding-right:10px">Worker: </label>
-                    <input name="filteredName" value="@Model.ResultsFilterViewModel.FilteredName" class="form-control" />
+                    <input name="filteredName" value="@Model.ResultsFilterViewModel.FilteredName" class="form-control" size="15" />
 
                     <label class="control-label" style="padding-right:10px; padding-left:7px">Camera: </label>
-                    <input name="filteredCameraId" value="@Model.ResultsFilterViewModel.FilteredCameraId" class="form-control" />
+                    <input name="filteredCameraId" value="@Model.ResultsFilterViewModel.FilteredCameraId" class="form-control" size="15" />
 
                     <label class="control-label" style="padding-right:10px; padding-left:7px">Date: </label>
-                    <input name="filteredDateTime" value="@Model.ResultsFilterViewModel.FilteredDateTime" type="datetime" class="form-control" />
+                    <input name="filteredDateTime" value="@Model.ResultsFilterViewModel.FilteredDateTime" type="datetime" class="form-control" size="15" />
 
                     <input type="submit" value="Filter" class="btn btn-primary" style="margin-left:7px" />
                 </div>

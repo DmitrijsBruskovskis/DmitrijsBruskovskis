@@ -14,7 +14,12 @@ namespace Midis.EyeOfHorus.ClientLibrary.Database
 
         public DataSet GetDataSet()
         {
-            string databasePath = Path.GetFullPath("../../../../Midis.EyeOfHorus.ClientLibrary/Database/DataBase.db");
+            //Debug Path
+            //string databasePath = Path.GetFullPath("../../../../Midis.EyeOfHorus.ClientLibrary/Database/DataBase.db");
+
+            //Release Path
+            string databasePath = Path.GetFullPath("./Database/DataBase.db");
+
             string cs = @"URI=file:" + databasePath;
             con = new SQLiteConnection(cs);
             da = new SQLiteDataAdapter("Select * From Cameras", con);

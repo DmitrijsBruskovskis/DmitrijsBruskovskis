@@ -18,7 +18,7 @@ namespace WebApp.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly PostGreSqlDbContext db;
-        public async Task<IActionResult> Index(string filteredName = null, int? filteredCameraId = null, string filteredDateTime = null, int page = 1, ResultsSortState sortOrder = ResultsSortState.CameraIdAsc)
+        public async Task<IActionResult> Index(string filteredName = null, int? filteredCameraId = null, string filteredDateTime = null, int page = 1, ResultsSortState sortOrder = ResultsSortState.DateTimeDesc)
         {
             int pageSize = 20;
 
