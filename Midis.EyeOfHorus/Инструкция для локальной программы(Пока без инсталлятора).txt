@@ -1,9 +1,0 @@
-1) Докачать ffmpeg по ссылке и скопировать его содержимое в существующий скелет. После этого удалить все текстовые файлы с названием (1) и перекинуть результат в system32.
-2) Запустить студию, скомпилировать проект сервиса и установить VideoDivisionService
-{
-    cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
-    InstallUtil.exe C:\Projects\Git\DmitrijsBruskovskis\Midis.EyeOfHorus\Midis.EyeOfHorus.VideoDivisionService\bin\Debug\VideoDivisionService.exe
-    (Для переустановки - sc delete VideoDivisionService)
-}
-3) Если не отключить в сервисе попытку пересылки файлов на сервер, то будет ошибка, так как сервер пока что только локальный
-4) Описание создания локального FTP сервера - https://www.windowscentral.com/how-set-and-manage-ftp-server-windows-10
