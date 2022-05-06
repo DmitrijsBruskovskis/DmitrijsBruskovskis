@@ -32,12 +32,19 @@ namespace Midis.EyeOfHorus.ClientLibrary.Database
 
         public void ExecuteCommand(string commandText)
         {
-            cmd = new SQLiteCommand();
-            con.Open();
-            cmd.Connection = con;
-            cmd.CommandText = commandText;
-            cmd.ExecuteNonQuery();
-            con.Close();
+            try
+            {
+                cmd = new SQLiteCommand();
+                con.Open();
+                cmd.Connection = con;
+                cmd.CommandText = commandText;
+                cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            catch
+            {
+
+            }       
         }
     }
 }

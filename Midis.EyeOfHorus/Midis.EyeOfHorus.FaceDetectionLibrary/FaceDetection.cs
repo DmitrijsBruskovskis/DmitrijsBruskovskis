@@ -140,7 +140,7 @@ namespace Midis.EyeOfHorus.FaceDetectionLibrary
             }
             else
             {   //case when client count was equal but one or many clients have been changed in
-                //WEB and needs to change them in the local DB(aka API)
+                //WEB and need to change them in the local DB(aka API)
                 if (listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count() != 0)
                 {
                     for (int i = 0; i < listForUpdatingWithGroupId.ListOfWorkerGroupsForUpdating.Count(); i++)

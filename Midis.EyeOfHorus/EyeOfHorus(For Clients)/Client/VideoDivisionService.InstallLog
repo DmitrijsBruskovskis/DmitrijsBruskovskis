@@ -1,0 +1,78 @@
+﻿Выполняется установка сборки 'G:\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Служба VideoDivisionService успешно установлена.
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется фиксация сборки 'G:\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\Client\VideoDivisionService.exe
+Выполняется установка сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется откат для сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Восстанавливается исходное состояние журнала событий для источника VideoDivisionService.
+Выполняется установка сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется откат для сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Восстанавливается исходное состояние журнала событий для источника VideoDivisionService.
+Выполняется установка сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Служба VideoDivisionService успешно установлена.
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется фиксация сборки 'G:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = G:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = G:\EyeOfHorus\Client\VideoDivisionService.exe
+Выполняется установка сборки 'F:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = F:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = F:\EyeOfHorus\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Служба VideoDivisionService успешно установлена.
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется фиксация сборки 'F:\EyeOfHorus\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = F:\EyeOfHorus\Client\VideoDivisionService.InstallLog
+   assemblypath = F:\EyeOfHorus\Client\VideoDivisionService.exe
+Выполняется установка сборки 'C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.InstallLog
+   assemblypath = C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.exe
+Устанавливается служба VideoDivisionService...
+Служба VideoDivisionService успешно установлена.
+Создается исходный EventLog VideoDivisionService в журнале Application...
+Выполняется фиксация сборки 'C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.exe'.
+Затронуты следующие параметры:
+   logtoconsole = 
+   logfile = C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.InstallLog
+   assemblypath = C:\Projects\Midis.EyeOfHorus\EyeOfHorus(For Clients)\Client\VideoDivisionService.exe

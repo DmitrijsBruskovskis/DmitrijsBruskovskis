@@ -1,1 +1,0 @@
-ffmpeg -i C:\Projects\ffmpeg\VideoForTests\test.mp4 -r 0.01 C:\Projects\ffmpeg\Results\%03d.png
